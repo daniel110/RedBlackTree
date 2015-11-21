@@ -360,7 +360,45 @@ public class RBTree
 	 */
 	public int insert(int k, String v) 
 	{
-		return 42; // to be replaced by student code
+		RBNode root = this.getRoot();
+		RBNode new_node = new RBNode(k, v, true);
+		
+		//	Check if the key is already in the tree.
+		SearchKeyInSubTreeResult search_result = this.searchKeyInSubTree(root, k);
+		if ((search_result == null) || (search_result.Result != null) || (root == null))
+		{
+			return -1;
+		}
+		
+		//	In this case the root should be the parent of the new item.
+		//	Root is not null here and (root.key != k) for sure!
+		if (search_result.Parent == null)
+		{
+			if (root.getKey() > k)
+			{
+				root.setLeftNode(new_node);
+			} else {
+				root.setRightNode(new_node);
+			}
+			return 0;
+		}
+		
+		//	Here key is not in the tree and we have a parent to put the new
+		//	node in. So first we should add the node.
+		if (search_result.Parent.getKey() > k)
+		{
+			search_result.Parent.setLeftNode(new_node);
+		} else {
+			search_result.Parent.setRightNode(new_node);
+		}
+		
+		//	Now we check if parent is red. else we are OK for now.		
+		if (search_result.Parent.isRed == true)
+		{
+			// all cases			
+		}
+		
+		return 0; // to be replaced by student code
 	}
 
 	/**
