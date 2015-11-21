@@ -106,6 +106,36 @@ public class RBTree
 		////////////////////////////
 
 	}
+	
+	/**
+	 * SearchKeyInSubTreeResult Class is the object that searchKeyInSubTree returns.
+	 * It allows us to use that function in order to find a Node and for inset a new node.
+	 */
+	public class SearchKeyInSubTreeResult
+	{
+		
+		/**
+		 * The Parent member is Node that is the lowest node that should
+		 * have key looked for, within one of it's children.
+		 */
+		public RBNode Parent;
+		/**
+		 * The Result member is the actual Node with the wanted key.
+		 * If no node found, the Parent member should be the parent of the new key.
+		 */
+		public RBNode Result;
+		
+		public SearchKeyInSubTreeResult(RBNode result, RBNode parent)
+		{
+			this.Result = result;
+			this.Parent = parent;
+		}
+		public SearchKeyInSubTreeResult()
+		{
+			this.Result = null;
+			this.Parent = null;
+		}		
+	}
 
 	/**
 	 * public RBNode getRoot()
@@ -177,9 +207,16 @@ public class RBTree
 	 */
 	public String search(int k) 
 	{
-		RBNode node = this.searchKeyInSubTree(this.getRoot(), k);
+		SearchKeyInSubTreeResult res = this.searchKeyInSubTree(this.getRoot(), k);
+		if (res == null)
+		{
+			//	Should not be here
+			return null;
+		}
+		RBNode node = res.Result;
 		if (node == null)
 		{
+			//	Node not found
 			return null;
 		}
 		
@@ -240,11 +277,12 @@ public class RBTree
 	 * RBNode that represent a root of a sub-tree in which we want to search
 	 * for a specific key.
 	 * @param key
-	 * The key to look for
+	 * The key to look for.
 	 * @return
-	 * The RBNode that has the given key within the sub-tree
+	 * The RBNode that has the given key within the sub-tree.
+	 * null if key not found.
 	 */
-	private RBNode searchKeyInSubTree(RBNode sub_tree_root, int key)
+	private SearchKeyInSubTreeResult searchKeyInSubTree(RBNode sub_tree_root, int key)
 	{
 		RBNode current_node = sub_tree_root;
 		int current_key = 0;
@@ -255,7 +293,8 @@ public class RBTree
 			
 			if (current_key == key)
 			{
-				return current_node;				
+				//	Return the found Node with it's parent.
+				return new SearchKeyInSubTreeResult(current_node, current_node.getParent());				
 			} else if ((current_key > key) && (current_node.getLeft() != null))
 			{
 				current_node = current_node.getLeft();
@@ -263,13 +302,14 @@ public class RBTree
 			{
 				current_node = current_node.getRight();					
 			} else {
-				//	The children we need is null
-				return null;
+				//	The children we need is null (Key not found)
+				//	But we still return the parent in case we want to insert a new key.
+				return new SearchKeyInSubTreeResult(null, current_node);
 			}			
 		}
 		
 		//	We would get here only if sub_tree_root is null.
-		return null;
+		return new SearchKeyInSubTreeResult();
 	}
 	
 	/**
