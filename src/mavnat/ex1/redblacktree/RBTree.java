@@ -58,7 +58,6 @@ public class RBTree
 			this(key, value, true);
 		}
 		
-		
 		//////// getters //////////
 		
 		public String getValue()
@@ -234,5 +233,121 @@ public class RBTree
 	 * If you wish to implement classes, other than RBTree and RBNode, do it in
 	 * this file, not in another file.
 	 */
+	
+	
+	////// cases for insertion ////////////
+	
+	/**
+	 * 
+	 * @param node
+	 * 
+	 * @note: the only insertion case that can be looped
+	 */
+	private RBNode insertCase1(RBNode node)
+	{
+		return null;
+	}
+	
+	
+	private RBNode insertCase2(RBNode node, boolean isParentLeftChild)
+	{
+		return null;
+	}
+	
+	private void insertCase3(RBNode node, boolean isParentLeftChild)
+	{
+		
+	}
+	/////////////////////////////////////
+	
+	////// cases for deletion ///////////
+	private void deleteRedLeaf(RBNode node)
+	{
+		
+	}
+	
+	private void deleteBlackParent_WithOneRedChild(RBNode node, boolean isLeftChild)
+	{
+		
+	}
+	
+	private void deleteBlackLeaf_WithBlackParentAndRedSibling(RBNode node, boolean isParentLeftChild)
+	{
+		
+	}
+	
+	
+	
+	private void deleteBlackLeaf_WithBlackParentAndBlackSibling(RBNode node)
+	{
+		
+	}
+	
+	private RBNode deleteDoubleBlack_Case1(RBNode node, boolean isParentLeftChild)
+	{
+		return null;
+	}
+	
+	/**
+	 * 
+	 * @param node
+	 * @return
+	 * 
+	 * @note: the only deletion case that can be looped
+	 */
+	private RBNode deleteDoubleBlack_Case2_ParentBlack(RBNode node)
+	{
+		return null;
+	}
+	
+	private RBNode deleteDoubleBlack_Case2_ParentRed(RBNode node)
+	{
+		return null;
+	}
+	
+	private RBNode deleteDoubleBlack_Case3(RBNode node)
+	{
+		return null;
+	}
+	
+	private RBNode deleteDoubleBlack_Case4(RBNode node)
+	{
+		return null;
+	}
+	////////////////////////////////////
+	
+	
+	///////// helper functions /////////
+	private boolean isParentLeftChild(RBNode node)
+	{
+		return true;
+	}
+	
+	
+	private RBNode getUncle(RBNode node)
+	{
+		return null;
+	}
+	
+	private boolean isUncleRed(RBNode node)
+	{
+		return this.getUncle(node).isRed();
+	}
+	
+	
+	private RBNode leftRotate(RBNode node)
+	{
+		
+		return null;
+	}
+	
+	private RBNode rightRotate(RBNode node)
+	{
+		
+		return null;
+	}
+	/////////////////////////////////////
+
+	
 
 }
