@@ -482,16 +482,52 @@ public class RBTree
 		return true;
 	}
 
+	/**
+	 * @param node
+	 * The X node in the presentations!
+	 * @return
+	 * The same X node. Null if rotate could not be performed.
+	 */
 	private RBNode leftRotate(RBNode node)
 	{
+		RBNode right_child = node.getRight();
+		if (right_child == null)
+		{
+			return null;
+		}
 		
-		return null;
+		//	It could be null, we don't care.
+		RBNode left_child_of_right_child = right_child.getLeft();
+		
+		node.setRightNode(left_child_of_right_child);
+		right_child.setLeftNode(node);
+		
+		//	Done :)
+		return node;
 	}
 	
+	/**
+	 * @param node
+	 * The Y node in the presentations!
+	 * @return
+	 * The same Y node. Null if rotate could not be performed.
+	 */
 	private RBNode rightRotate(RBNode node)
 	{
+		RBNode left_child = node.getLeft();
+		if (left_child == null)
+		{
+			return null;
+		}
 		
-		return null;
+		//	It could be null, we don't care.
+		RBNode right_child_of_left_child = left_child.getRight();
+		
+		node.setLeftNode(right_child_of_left_child);
+		left_child.setRightNode(node);
+		
+		//	Done :)
+		return node;
 	}
 	/////////////////////////////////////
 
