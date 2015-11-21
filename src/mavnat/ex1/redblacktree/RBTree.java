@@ -271,6 +271,44 @@ public class RBTree
 		//	We would get here only if sub_tree_root is null.
 		return null;
 	}
+	
+	/**
+	 * @param node
+	 * The node to get his successor 
+	 * @return
+	 * Return the successor node in the tree.
+	 * If no successor node then null.
+	 */
+	public RBNode getSuccessor(RBNode node)
+	{
+		// First we want to check if this node has a right child,
+		// he must be the next node.
+		// If it does not then the next node is the parent.
+		// The parent could be null. In that case, we don't have a next node.
+		// BUT if we are the right child of our parent then we need to find the first
+		// grand parent that we are the left child of him.
+	
+		RBNode walker = node;
+		
+		//	Check right child.
+		if (walker.getRight() != null)
+		{
+			return walker.getRight();
+		}
+		
+		//	Look for the first parent that we are his left child.
+		while (walker.getParent() != null)
+		{
+			if (walker.getParent().getLeft() == walker)
+			{
+				return walker.getParent();
+			}	
+			walker = walker.getParent();
+		}
+		
+		//	No parent found.
+		return null;
+	}
 
 	/**
 	 * public int insert(int k, String v)
@@ -306,8 +344,22 @@ public class RBTree
 	 */
 	public int[] keysToArray() 
 	{
-		int[] arr = new int[42]; // to be replaced by student code
-		return arr; // to be replaced by student code
+		if (this.nodesCount <= 0)
+		{
+			return new int[0];
+		}
+		
+		int[] res = new int[this.nodesCount];
+		RBNode walker = this.minNode;
+		int array_index = 0;
+		
+		while ((array_index < this.nodesCount) || (walker != null))
+		{
+			res[array_index] = walker.getKey();
+			walker = this.getSuccessor(walker);			
+		}
+		
+		return res;
 	}
 
 	/**
@@ -318,8 +370,22 @@ public class RBTree
 	 */
 	public String[] valuesToArray() 
 	{
-		String[] arr = new String[42]; // to be replaced by student code
-		return arr; // to be replaced by student code
+		if (this.nodesCount <= 0)
+		{
+			return new String[0];
+		}
+		
+		String[] res = new String[this.nodesCount];
+		RBNode walker = this.minNode;
+		int array_index = 0;
+		
+		while ((array_index < this.nodesCount) || (walker != null))
+		{
+			res[array_index] = walker.getValue();
+			walker = this.getSuccessor(walker);			
+		}
+		
+		return res;
 	}
 
 	/**
