@@ -104,6 +104,7 @@ public class RBTree
 			this.parentNode = parentNode;
 		}
 		////////////////////////////
+
 	}
 
 	/**
@@ -176,7 +177,99 @@ public class RBTree
 	 */
 	public String search(int k) 
 	{
-		return "42"; // to be replaced by student code
+		RBNode node = this.searchKeyInSubTree(this.getRoot(), k);
+		if (node == null)
+		{
+			return null;
+		}
+		
+		return node.getValue();
+	}
+	
+	
+	/**
+	 * @param node
+	 * Some RBNode that you want his uncle.
+	 * @return
+	 * Null if the node is root or node parent is root.
+	 * Otherwise, return the uncle.
+	 * Uncle can still be null even if grandparent is not null!
+	 */
+	private RBNode getUncle(RBNode node)
+	{
+		RBNode parent = node.getParent();
+		if (parent == null)
+		{
+			return null;
+		}
+		RBNode grandParent = parent.getParent();
+		if (grandParent == null)
+		{
+			return null;
+		}
+		//	If the parent is the left child of his parent, we want his brother.
+		if (parent == grandParent.getLeft())
+		{
+			return grandParent.getRight();
+		} else {
+			return grandParent.getLeft();			
+		}
+	}
+	
+	
+	/**
+	 * @param node
+	 * Some RBNode that you want his uncle.
+	 * @return
+	 * True if the uncle of this node exist and is red.
+	 * False otherwise.
+	 */
+	private boolean isUncleRed(RBNode node)
+	{
+		RBNode uncle = this.getUncle(node);
+		if (uncle != null)
+		{
+			return uncle.isRed();
+		}
+		//	False if no uncle was found.
+		return false;
+	}
+	
+	/**
+	 * @param sub_tree_root
+	 * RBNode that represent a root of a sub-tree in which we want to search
+	 * for a specific key.
+	 * @param key
+	 * The key to look for
+	 * @return
+	 * The RBNode that has the given key within the sub-tree
+	 */
+	private RBNode searchKeyInSubTree(RBNode sub_tree_root, int key)
+	{
+		RBNode current_node = sub_tree_root;
+		int current_key = 0;
+		
+		while (current_node != null)
+		{
+			current_key = current_node.getKey();
+			
+			if (current_key == key)
+			{
+				return current_node;				
+			} else if ((current_key > key) && (current_node.getLeft() != null))
+			{
+				current_node = current_node.getLeft();
+			} else if ((current_key < key) && (current_node.getRight() != null))
+			{
+				current_node = current_node.getRight();					
+			} else {
+				//	The children we need is null
+				return null;
+			}			
+		}
+		
+		//	We would get here only if sub_tree_root is null.
+		return null;
 	}
 
 	/**
@@ -322,19 +415,7 @@ public class RBTree
 	{
 		return true;
 	}
-	
-	
-	private RBNode getUncle(RBNode node)
-	{
-		return null;
-	}
-	
-	private boolean isUncleRed(RBNode node)
-	{
-		return this.getUncle(node).isRed();
-	}
-	
-	
+
 	private RBNode leftRotate(RBNode node)
 	{
 		
