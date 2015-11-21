@@ -385,11 +385,22 @@ public class RBTree
 		
 		//	Here key is not in the tree and we have a parent to put the new
 		//	node in. So first we should add the node.
+		//	* I can combine the insertion above and here but for now it's more readable.
 		if (search_result.Parent.getKey() > k)
 		{
 			search_result.Parent.setLeftNode(new_node);
 		} else {
 			search_result.Parent.setRightNode(new_node);
+		}
+		
+		//	Deal with max and min
+		if ((this.minNode != null) && (this.minNode.key > k))
+		{
+			this.minNode = new_node;
+		}
+		if ((this.maxNode != null) && (this.maxNode.key < k))
+		{
+			this.maxNode = new_node;
 		}
 		
 		//	Now we check if parent is red. else we are OK for now.		
@@ -398,7 +409,7 @@ public class RBTree
 			// all cases			
 		}
 		
-		return 0; // to be replaced by student code
+		return 0;
 	}
 
 	/**
@@ -411,7 +422,18 @@ public class RBTree
 	 */
 	public int delete(int k) 
 	{
-		return 42; // to be replaced by student code
+		RBNode root = this.getRoot();
+		RBNode deleted_node = null;
+		
+		//	Check if the key is already in the tree.
+		SearchKeyInSubTreeResult search_result = this.searchKeyInSubTree(root, k);
+		if ((search_result == null) || (search_result.Result == null) || (root == null))
+		{
+			return -1;
+		}
+		
+		deleted_node = search_result.Result;
+		
 	}
 
 	/**
@@ -555,9 +577,21 @@ public class RBTree
 	
 	
 	///////// helper functions /////////
-	private boolean isParentLeftChild(RBNode node)
+	private boolean isLeftChild(RBNode node)
 	{
-		return true;
+		if ((node.getParent() != null) && (node.getParent().getLeft() == node))
+		{
+			return true;
+		}
+		return false;
+	}
+	private boolean isRightChild(RBNode node)
+	{
+		if ((node.getParent() != null) && (node.getParent().getRight() == node))
+		{
+			return true;
+		}
+		return false;
 	}
 
 	/**
