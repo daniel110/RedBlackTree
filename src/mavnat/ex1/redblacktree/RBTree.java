@@ -103,17 +103,85 @@ public class RBTree
 		{
 			this.rightNode = rightNode;
 		}
-		public void setFatherNode(RBNode parentNode)
+		public void setParentNode(RBNode parentNode)
 		{
 			this.parentNode = parentNode;
 		}
 		////////////////////////////
+		
+		/**
+		 * @param node
+		 * Some RBNode that you want his uncle.
+		 * @return
+		 * Null if the node is root or node parent is root.
+		 * Otherwise, return the uncle.
+		 * Uncle can still be null even if grandparent is not null!
+		 */
+		public RBNode getUncle()
+		{
+			RBNode parent = this.getParent();
+			if (parent == null)
+			{
+				return null;
+			}
+			RBNode grandParent = parent.getParent();
+			if (grandParent == null)
+			{
+				return null;
+			}
+			//	If the parent is the left child of his parent, we want his brother.
+			if (parent == grandParent.getLeft())
+			{
+				return grandParent.getRight();
+			} 
+			else 
+			{
+				return grandParent.getLeft();			
+			}
+		}
+		
+		
+		/**
+		 * @param node
+		 * Some RBNode that you want his uncle.
+		 * @return
+		 * True if the uncle of this node exist and is red.
+		 * False otherwise.
+		 */
+		public boolean isUncleRed()
+		{
+			RBNode uncle = this.getUncle();
+			if (uncle != null)
+			{
+				return uncle.isRed();
+			}
+			//	False if no uncle was found.
+			return false;
+		}
+		
+		
+		public boolean isLeftChild()
+		{
+			if ((this.getParent() != null) && (this.getParent().getLeft() == this))
+			{
+				return true;
+			}
+			return false;
+		}
+		public boolean isRightChild()
+		{
+			if ((this.getParent() != null) && (this.getParent().getRight() == this))
+			{
+				return true;
+			}
+			return false;
+		}
 
 	}
 	
 	/**
 	 * SearchKeyInSubTreeResult Class is the object that searchKeyInSubTree returns.
-	 * It allows us to use that function in order to find a Node and for inset a new node.
+	 * It allows us to use that function in order to find a Node and for insert a new node.
 	 */
 	public class SearchKeyInSubTreeResult
 	{
@@ -227,54 +295,7 @@ public class RBTree
 		return node.getValue();
 	}
 	
-	
-	/**
-	 * @param node
-	 * Some RBNode that you want his uncle.
-	 * @return
-	 * Null if the node is root or node parent is root.
-	 * Otherwise, return the uncle.
-	 * Uncle can still be null even if grandparent is not null!
-	 */
-	private RBNode getUncle(RBNode node)
-	{
-		RBNode parent = node.getParent();
-		if (parent == null)
-		{
-			return null;
-		}
-		RBNode grandParent = parent.getParent();
-		if (grandParent == null)
-		{
-			return null;
-		}
-		//	If the parent is the left child of his parent, we want his brother.
-		if (parent == grandParent.getLeft())
-		{
-			return grandParent.getRight();
-		} else {
-			return grandParent.getLeft();			
-		}
-	}
-	
-	
-	/**
-	 * @param node
-	 * Some RBNode that you want his uncle.
-	 * @return
-	 * True if the uncle of this node exist and is red.
-	 * False otherwise.
-	 */
-	private boolean isUncleRed(RBNode node)
-	{
-		RBNode uncle = this.getUncle(node);
-		if (uncle != null)
-		{
-			return uncle.isRed();
-		}
-		//	False if no uncle was found.
-		return false;
-	}
+
 	
 	/**
 	 * @param sub_tree_root
@@ -299,13 +320,17 @@ public class RBTree
 			{
 				//	Return the found Node with it's parent.
 				return new SearchKeyInSubTreeResult(current_node, current_node.getParent());				
-			} else if ((current_key > key) && (current_node.getLeft() != null))
+			} 
+			else if ((current_key > key) && (current_node.getLeft() != null))
 			{
 				current_node = current_node.getLeft();
-			} else if ((current_key < key) && (current_node.getRight() != null))
+			} 
+			else if ((current_key < key) && (current_node.getRight() != null))
 			{
 				current_node = current_node.getRight();					
-			} else {
+			} 
+			else 
+			{
 				//	The children we need is null (Key not found)
 				//	But we still return the parent in case we want to insert a new key.
 				return new SearchKeyInSubTreeResult(null, current_node);
@@ -313,7 +338,7 @@ public class RBTree
 		}
 		
 		//	We would get here only if sub_tree_root is null.
-		return new SearchKeyInSubTreeResult();
+		return null;
 	}
 	
 	/**
@@ -361,61 +386,93 @@ public class RBTree
 	 * must remain valid (keep its invariants). returns the number of color
 	 * switches, or 0 if no color switches were necessary. returns -1 if an item
 	 * with key k already exists in the tree.
+	 * 
+	 * @error return -2 if something bad happened
 	 */
 	public int insert(int k, String v) 
 	{
-		RBNode root = this.getRoot();
-		RBNode new_node = new RBNode(k, v, true);
+		RBNode newNode = new RBNode(k, v); // default color is red
 		
 		//	Check if the key is already in the tree.
-		SearchKeyInSubTreeResult search_result = this.searchKeyInSubTree(root, k);
-		if ((search_result == null) || (search_result.Result != null) || (root == null))
+		SearchKeyInSubTreeResult searchResult = this.searchKeyInSubTree(this.rootNode, k);
+		
+		if (null == searchResult)
+		{
+			// root is null
+			this.rootNode = newNode;
+			this.rootNode.setColor(false);
+			
+			// update the number of nodes in the tree + min and max nodes
+			this.nodesCount += 1;
+			this.updateMinMax(newNode);
+			
+			return 0;
+		}
+		else if (null != searchResult.Result)
 		{
 			return -1;
 		}
 		
-		//	In this case the root should be the parent of the new item.
-		//	Root is not null here and (root.key != k) for sure!
-		if (search_result.Parent == null)
+		// update the number of nodes in the tree + min and max nodes
+		this.nodesCount += 1;
+		this.updateMinMax(newNode);
+				
+		//	Here key is not in the tree and we have a parent to put the new node in
+		if (searchResult.Parent.getKey() > k)
 		{
-			if (root.getKey() > k)
-			{
-				root.setLeftNode(new_node);
-			} else {
-				root.setRightNode(new_node);
-			}
-			return 0;
+			searchResult.Parent.setLeftNode(newNode);
+		} 
+		else 
+		{
+			searchResult.Parent.setRightNode(newNode);
 		}
+		// update new node parent
+		newNode.setParentNode(searchResult.Parent);
 		
-		//	Here key is not in the tree and we have a parent to put the new
-		//	node in. So first we should add the node.
-		//	* I can combine the insertion above and here but for now it's more readable.
-		if (search_result.Parent.getKey() > k)
-		{
-			search_result.Parent.setLeftNode(new_node);
-		} else {
-			search_result.Parent.setRightNode(new_node);
-		}
 		
-		//	Deal with max and min
-		if ((this.minNode == null) || (this.minNode.key > k))
-		{
-			this.minNode = new_node;
-		}
-		if ((this.maxNode == null) || (this.maxNode.key < k))
-		{
-			this.maxNode = new_node;
-		}
+		// now we will balance the tree (if necessary)
+		return insertBalancer(newNode, 0);
 		
-		//	Now we check if parent is red. else we are OK for now.		
-		if (search_result.Parent.isRed == true)
-		{
-			// all cases			
-		}
-		
-		return 0;
 	}
 
+	public int insertBalancer(RBNode node, int colorSwitchCounter)
+	{
+		if (node == this.rootNode)
+		{
+			// if we are here the root must be red
+			node.isRed = false;
+			return ++colorSwitchCounter;
+		}
+		
+		
+		if (node.isRed && node.parentNode.isRed)
+		{
+			if (node.isUncleRed())
+			{
+				/// Case 1 
+				colorSwitchCounter += 3;
+				return insertBalancer(this.insertCase1(node), colorSwitchCounter);
+			}
+			
+			boolean isParentLeftChild =  this.isParentLeftChild(node);
+			
+			node = this.insertCase2(node, isParentLeftChild);
+			if (null == node)
+			{
+				return -2;
+			}
+			
+			node = this.insertCase3(node, isParentLeftChild);
+			if (null == node)
+			{
+				return -2;
+			}
+			colorSwitchCounter += 2;
+		}
+		
+		return colorSwitchCounter;
+	}
+	
 	/**
 	 * public int delete(int k)
 	 *
@@ -438,6 +495,9 @@ public class RBTree
 		
 		deleted_node = search_result.Result;
 		
+		
+		
+		return deleted_node.getKey();
 	}
 
 	/**
@@ -497,6 +557,18 @@ public class RBTree
 	 * this file, not in another file.
 	 */
 	
+	private void updateMinMax(RBNode newNode)
+	{
+		//	Deal with max and min
+		if ((this.minNode == null) || (this.minNode.key > newNode.getKey()))
+		{
+			this.minNode = newNode;
+		}
+		if ((this.maxNode == null) || (this.maxNode.key < newNode.getKey()))
+		{
+			this.maxNode = newNode;
+		}
+	}
 	
 	////// cases for insertion ////////////
 	
@@ -508,18 +580,52 @@ public class RBTree
 	 */
 	private RBNode insertCase1(RBNode node)
 	{
-		return null;
+		RBNode parent = node.getParent();
+		
+		parent.setColor(false);
+		node.getUncle().setColor(false);
+		
+		RBNode grandpa = parent.getParent();
+		grandpa.setColor(true);
+		
+		return grandpa;
 	}
 	
 	
 	private RBNode insertCase2(RBNode node, boolean isParentLeftChild)
 	{
-		return null;
+		if ((isParentLeftChild && node.isRightChild()))
+		{
+			return this.leftRotate(node.getParent());
+		}
+		else if (!isParentLeftChild && node.isLeftChild())
+		{
+			return this.rightRotate(node.getParent());
+		}
+		
+		return node;
 	}
 	
-	private void insertCase3(RBNode node, boolean isParentLeftChild)
+	private RBNode insertCase3(RBNode node, boolean isParentLeftChild)
 	{
+		if (isParentLeftChild)
+		{
+			node = this.rightRotate(node.getParent().getParent());
+		}
+		else
+		{
+			node = this.leftRotate(node.getParent().getParent());
+		}
 		
+		if (node == null)
+		{
+			return null;
+		}
+		
+		node.setColor(true);
+		node.getParent().setColor(false);
+		
+		return node.getParent();
 	}
 	/////////////////////////////////////
 	
@@ -581,20 +687,20 @@ public class RBTree
 	
 	
 	///////// helper functions /////////
-	private boolean isLeftChild(RBNode node)
+	private boolean isParentLeftChild(RBNode node)
 	{
-		if ((node.getParent() != null) && (node.getParent().getLeft() == node))
+		// check validity
+		if (null == node || null == node.getParent() || null == node.getParent().getParent())
+		{
+			return false;
+		}
+		
+		RBNode parent = node.getParent();
+		if (parent.getParent().leftNode == parent)
 		{
 			return true;
 		}
-		return false;
-	}
-	private boolean isRightChild(RBNode node)
-	{
-		if ((node.getParent() != null) && (node.getParent().getRight() == node))
-		{
-			return true;
-		}
+		
 		return false;
 	}
 
@@ -606,19 +712,30 @@ public class RBTree
 	 */
 	private RBNode leftRotate(RBNode node)
 	{
+		//save node parent info
+		RBNode nodeParent = node.getParent();
+		boolean isNodeLeftChild = node.isLeftChild();
+		////
+				
 		RBNode right_child = node.getRight();
 		if (right_child == null)
 		{
 			return null;
 		}
 		
-		//	It could be null, we don't care.
 		RBNode left_child_of_right_child = right_child.getLeft();
-		
 		node.setRightNode(left_child_of_right_child);
+		if (null != left_child_of_right_child)
+		{
+			left_child_of_right_child.setParentNode(node);
+		}
+		
+		node.setParentNode(right_child);
+		
 		right_child.setLeftNode(node);
 		
-		//	Done :)
+		this.updateParentInfoAfterRotation(nodeParent, right_child, isNodeLeftChild);
+		
 		return node;
 	}
 	
@@ -630,23 +747,76 @@ public class RBTree
 	 */
 	private RBNode rightRotate(RBNode node)
 	{
+		//save node parent info
+		RBNode nodeParent = node.getParent();
+		boolean isNodeLeftChild = node.isLeftChild();
+		////
+		
 		RBNode left_child = node.getLeft();
 		if (left_child == null)
 		{
 			return null;
 		}
 		
-		//	It could be null, we don't care.
 		RBNode right_child_of_left_child = left_child.getRight();
-		
 		node.setLeftNode(right_child_of_left_child);
+		if (null != right_child_of_left_child)
+		{
+			right_child_of_left_child.setParentNode(node);
+		}
+		
+		node.setParentNode(left_child);
+		
 		left_child.setRightNode(node);
 		
-		//	Done :)
+		this.updateParentInfoAfterRotation(nodeParent, left_child, isNodeLeftChild);
+		
 		return node;
 	}
-	/////////////////////////////////////
-
 	
+	/**
+	 * 
+	 * @param nodeParent		the parent of the node parameter (== NodeParam) 
+	 * 												given in rightRotate or leftRotate (see their doc)
+	 * @param newLocalRoot		the new local root node after the rotation
+	 * @param isNodeLeftChild   does the NodeParam was left or right child before the rotation
+	 */
+	private void updateParentInfoAfterRotation(RBNode nodeParent, RBNode newLocalRoot, boolean isNodeLeftChild)
+	{
+		newLocalRoot.setParentNode(nodeParent);
+		
+		if (null == nodeParent)
+		{
+			this.rootNode = newLocalRoot;
+			return;
+		}
+		
+		// if null != nodeParent 
+		if (isNodeLeftChild)
+		{
+			nodeParent.setLeftNode(newLocalRoot);
+		}
+		else
+		{
+			nodeParent.setRightNode(newLocalRoot);
+		}
+	}
+	
+	/////////////////////////////////////
+	
+	
+	
+	////// Testing helper functions //////
+	
+	public int getMaxKey()
+	{
+		return maxNode.getKey();
+	}
+	
+	public int getMinKey()
+	{
+		return minNode.getKey();
+	}
+	//////////////////////////////////////
 
 }
