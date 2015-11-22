@@ -8,7 +8,7 @@ package mavnat.ex1.redblacktree;
  * keys and values
  * 
  * @authors
- * 			1)  ; Dor Mendil ;
+ * 			1) dormendil ; Dor Mendil ; 200968873
  * 			2) danielf1 ; Daniel Feldman ; 302575436
  *
  */
@@ -120,7 +120,7 @@ public class RBTree
 		
 		/**
 		 * The Parent member is Node that is the lowest node that should
-		 * have key looked for, within one of it's children.
+		 * have the key we looked for, within one of it's children.
 		 */
 		public RBNode Parent;
 		/**
@@ -600,7 +600,7 @@ public class RBTree
 
 	/**
 	 * @param node
-	 * The X node in the presentations!
+	 * The X node in the Rotation.png diagram!
 	 * @return
 	 * The same X node. Null if rotate could not be performed.
 	 */
@@ -624,7 +624,7 @@ public class RBTree
 	
 	/**
 	 * @param node
-	 * The Y node in the presentations!
+	 * The Y node in the Rotation.png diagram!
 	 * @return
 	 * The same Y node. Null if rotate could not be performed.
 	 */
