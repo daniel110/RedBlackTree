@@ -1,11 +1,15 @@
 package mavnat.ex1.redblacktree;
 
+
 /**
- *
  * RBTree
  *
  * An implementation of a Red Black Tree with non-negative, distinct integer
  * keys and values
+ * 
+ * @authors
+ * 			1)  ; Dor Mendil ;
+ * 			2) danielf1 ; Daniel Feldman ; 302575436
  *
  */
 public class RBTree 
