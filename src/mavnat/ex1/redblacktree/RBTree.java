@@ -398,11 +398,11 @@ public class RBTree
 		}
 		
 		//	Deal with max and min
-		if ((this.minNode != null) && (this.minNode.key > k))
+		if ((this.minNode == null) || (this.minNode.key > k))
 		{
 			this.minNode = new_node;
 		}
-		if ((this.maxNode != null) && (this.maxNode.key < k))
+		if ((this.maxNode == null) || (this.maxNode.key < k))
 		{
 			this.maxNode = new_node;
 		}
