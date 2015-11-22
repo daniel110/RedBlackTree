@@ -1,18 +1,10 @@
 package mavnat.ex1.redblacktree.Test;
 
-import static org.junit.Assert.*;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import org.junit.Test;
-
 import mavnat.ex1.redblacktree.*;
+import mavnat.ex1.redblacktree.Test.Log.*;
 
 public class TestUtils 
 {
-
 	public static boolean RecCheckTree(Node<Integer,String> node, RBTree.RBNode nodeCheck)
 	{
 		if (node == null)
@@ -29,10 +21,13 @@ public class TestUtils
 			return false;
 		}
 		
-
 		if (node.key != nodeCheck.getKey() || 
 				!node.value.equals(nodeCheck.getValue()) || 
-				node.getColor() != nodeCheck.isRed())
+				node.getColor() != nodeCheck.isRed() ||
+				(null != node.parent && null == nodeCheck.getParent()) ||
+				(null == node.parent && null != nodeCheck.getParent()) ||
+					(!(null == node.parent && null == nodeCheck.getParent()) && 
+						node.parent.key != nodeCheck.getParent().getKey()))
 		{
 			return false;
 		}
@@ -51,81 +46,41 @@ public class TestUtils
 	}
 	
 	
-	@Test
-	public void test_INSERT() 
+	public static LogInfo getLogInfo(Node<Integer,String> node, RBTree t)
 	{
-		final int MAX_INSERTION = 2000;
+		LogInfo info = new LogInfo();
 		
-		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
-		RBTree greatT = new RBTree();
+		info.key = node.key;
 		
-		java.util.Random gen = new java.util.Random();
-       
-		int[] insertionList = new int[MAX_INSERTION];
+		info.color = node.color.toString();
 		
-		for (int i=0; i<MAX_INSERTION; i++)
+		if (null == node.parent )
 		{
-			int nextKey = gen.nextInt(999999999);
-			insertionList[i] = nextKey;
-			
-			t.insert(nextKey, Integer.toString(nextKey)); 
-			greatT.insert(nextKey, Integer.toString(nextKey));
-			
-		
-			if (!TestUtils.CheckTrees(t, greatT))
-			{
-				fail("Non match tree: insertion keys %n " + insertionList.toString());
-			}
+			info.parentColor = "Root";
 		}
+		else
+		{
+			info.parentColor = node.parent.color.toString();
+		}
+		
+		int childrenCount = 0;
+		if (null != node.left)
+		{
+			childrenCount++;
+		}
+		if (null != node.right)
+		{
+			childrenCount++;
+		}
+		info.childrenCount = childrenCount;
+		
+		// I think it's the black tree height
+		info.height = RedBTree.verifyProperty5Helper(node, 0, -1);
+		
+		info.isMax = (node.key == t.getMaxKey()) ? true : false;
+		info.isMin = (node.key == t.getMinKey()) ? true : false;
+		
+		return info;
 	}
 
-	
-	
-	@Test
-	public void test_DELETE() 
-	{
-		final int MAX_INSERTION = 2000;
-		
-		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
-		RBTree greatT = new RBTree();
-		
-		java.util.Random gen = new java.util.Random();
-       
-		Integer[] insertionArr = new Integer[MAX_INSERTION];
-		
-		for (int i=0; i<MAX_INSERTION; i++)
-		{
-			int nextKey = gen.nextInt(999999999);
-			insertionArr[i] = nextKey;
-			
-			t.insert(nextKey, Integer.toString(nextKey)); 
-			greatT.insert(nextKey, Integer.toString(nextKey));
-			
-		}
-		
-		if (!TestUtils.CheckTrees(t, greatT))
-		{
-			fail("Non match tree: insertion keys %n " + insertionArr.toString());
-		}
-		
-		List<Integer> insertionList = Arrays.asList(insertionArr);
-		Collections.shuffle(insertionList);
-		Integer[] deletionArr = insertionList.toArray(new Integer[insertionArr.length]);
-		
-		for (int i=0; i<MAX_INSERTION; i++)
-		{
-			int deleteKey = deletionArr[i];
-			
-			t.delete(deleteKey);
-			greatT.delete(deleteKey);
-			
-			if (!TestUtils.CheckTrees(t, greatT))
-			{
-				fail("Non match tree: deletion keys %n " + deletionArr.toString() + " ,index " + deleteKey);
-			}
-			
-		}
-		
-		
-	}
 }

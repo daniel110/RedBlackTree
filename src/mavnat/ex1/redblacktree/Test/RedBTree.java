@@ -111,7 +111,7 @@ public class RedBTree<K extends Comparable<? super K>,V>
         verifyProperty5Helper(root, 0, -1);
     }
 
-    private static int verifyProperty5Helper(Node<?,?> n, int blackCount, int pathBlackCount) {
+    public static int verifyProperty5Helper(Node<?,?> n, int blackCount, int pathBlackCount) {
         if (nodeColor(n) == Color.BLACK) {
             blackCount++;
         }
@@ -127,7 +127,7 @@ public class RedBTree<K extends Comparable<? super K>,V>
         pathBlackCount = verifyProperty5Helper(n.right, blackCount, pathBlackCount);
         return pathBlackCount;
     }
-    private Node<K,V> lookupNode(K key) {
+    public Node<K,V> lookupNode(K key) {
         Node<K,V> n = root;
         while (n != null) {
             int compResult = key.compareTo(n.key);
