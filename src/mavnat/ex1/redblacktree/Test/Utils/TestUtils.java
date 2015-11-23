@@ -4,10 +4,19 @@ import mavnat.ex1.redblacktree.*;
 import mavnat.ex1.redblacktree.Test.Log.*;
 
 
-
-
 public class TestUtils 
 {
+	public static boolean insertToBothArray(RedBTree<Integer, String> t, RBTree greatT, int nextKey)
+	{
+		if (-1 == greatT.insert(nextKey, Integer.toString(nextKey)))
+		{
+			return false;
+		}
+		t.insert(nextKey, Integer.toString(nextKey));
+		
+		return true;
+	}
+	
 	public static boolean RecCheckTree(Node<Integer,String> node, RBTree.RBNode nodeCheck)
 	{
 		if (node == null)
@@ -78,7 +87,7 @@ public class TestUtils
 		info.childrenCount = childrenCount;
 		
 		// I think it's the black tree height
-		info.height = RedBTree.verifyProperty5Helper(node, 0, -1);
+		info.blackHeight = RedBTree.verifyProperty5Helper(node, 0, -1);
 		
 		info.isMax = (node.key == t.getMaxKey()) ? true : false;
 		info.isMin = (node.key == t.getMinKey()) ? true : false;

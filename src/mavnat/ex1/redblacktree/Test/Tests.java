@@ -15,21 +15,62 @@ import mavnat.ex1.redblacktree.*;
 import mavnat.ex1.redblacktree.Test.Log.*;
 import mavnat.ex1.redblacktree.Test.Utils.*;
 
+
+/****
+ * !!!! README !!!!
+ * In order to use this test file - You must implement function in both RBTree and RBNode as follow:
+ * 	
+ * RBtree
+ * 		1) public RBTree.RBNode getRoot()  	 									 
+ * RBNode
+ * 		1) public int getKey()
+ * 		2) public String getValue()
+ *  	3) public boolean isRed()
+ *		4) public RBTree.RBNode getParent()
+ *
+ * 
+ * Enjoy and Good Luck!
+ *
+ *
+ *
+ *	note - you are more then welcome to add more tests - it is really easy!!
+ *			1) create a new function with @Test above it - and it will be running automatically
+ *			2) when your result was unexpected just use the fail() function;
+ *
+ *			Example:
+ *	
+ *			@Test
+ *			public void My_Super_Smart_Test()
+ *			{
+ *				result = MyTree.Insert({1,2,3,4,5,6});
+ *
+ *				if (result != expected)
+ *				{
+ *					fail("the test was failed because .....");
+ *				}
+ *			}
+ *		
+ *
+ */
+
 public class Tests
 {
+	/** 
+	 * Enable a Test to repeat X times using: @Repeat(times=X) tag above the test
+	 *  
+	 *  Example:
+	 *  @Test
+	 *  @Repeat(times=10) // repeat 10 times
+	 *  public void My_Super_Smart_Test()
+	 *	{
+	 *		 ...
+	 *	}
+	 */
 	@Rule
 	public RepeatRule repeatRule = new RepeatRule();
 	
-	private boolean insertToBothArray(RedBTree<Integer, String> t, RBTree greatT, int nextKey)
-	{
-		if (-1 == greatT.insert(nextKey, Integer.toString(nextKey)))
-		{
-			return false;
-		}
-		t.insert(nextKey, Integer.toString(nextKey));
-		
-		return true;
-	}
+	
+
 	
 	@Test
 	public void test_INSERT_Down_Order()
@@ -37,39 +78,41 @@ public class Tests
 		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
 		RBTree greatT = new RBTree();
 		
-		this.insertToBothArray(t, greatT, 5);
+		TestUtils.insertToBothArray(t, greatT, 5);
 		if (!TestUtils.CheckTrees(t, greatT))
 		{
 			fail("insert 5");
 		}
 		
-		this.insertToBothArray(t, greatT, 4);
+		TestUtils.insertToBothArray(t, greatT, 4);
 		if (!TestUtils.CheckTrees(t, greatT))
 		{
 			fail("insert 4");
 		}
 		
-		this.insertToBothArray(t, greatT, 2);
+		TestUtils.insertToBothArray(t, greatT, 2);
 		if (!TestUtils.CheckTrees(t, greatT))
 		{
 			fail("insert 2");
 		}
+		
+		
 	}
 	
 	@Test
-	public void test_INSERT_Error_1()
+	public void test_INSERT_Error_1() throws IOException
 	{
 		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
 		RBTree greatT = new RBTree();
 		
-		int [] badList = new int[] {99660, 32514, 85126, 182106, 170016, 58525, 81075, 2250, 91818, 147032, 76321, 173692, 128576, 115616, 176629, 190345, 135031, 186505, 121263, 198606, 66602, 165096, 182083, 34256, 31322, 86286, 38536, 182473, 165808, 166433, 89289, 196243, 11229, 104600, 122, 51952};
+		int [] badList = new int[] {99660, 32514, 85126, 182106, 170016, 58525, 81075, 2250, 91818, 147032, 76321, 173692, 128576, 115616, 176629, 190345, 135031, 186505, 121263, 198606, 66602, 165096, 182083, 34256, 31322, 86286, 38536, 182473, 165808, 166433, 89289, 196243, 11229, 104600, 122, 51952, 34255};
 		
 
 		for (int i = 0; i< badList.length; i++)
 		{
 			int element = badList[i];
 			
-			this.insertToBothArray(t, greatT, element);
+			TestUtils.insertToBothArray(t, greatT, element);
 			if (!TestUtils.CheckTrees(t, greatT))
 			{
 				fail("Blat!!");
@@ -77,18 +120,20 @@ public class Tests
 		}
 	}
 	
+	
 	@Test
 	@Repeat(times=10)
 	public void test_INSERT_fuzzer() throws IOException 
 	{
-		Logger logFile = new Logger("file.log", ",");
+		java.util.Random gen = new java.util.Random();
+		
+		Logger logFile = new Logger("file_insert_fuzzer_" + Integer.toString(gen.nextInt(999)) + ".log" , ",");
 		
 		final int MAX_INSERTION = 5000;
 		
 		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
 		RBTree greatT = new RBTree();
-		
-		java.util.Random gen = new java.util.Random();
+			
        
 		int[] insertionList = new int[MAX_INSERTION];
 		
@@ -97,7 +142,7 @@ public class Tests
 			int nextKey = gen.nextInt(MAX_INSERTION * 100);
 			insertionList[i] = nextKey;
 			
-			if (false == this.insertToBothArray(t, greatT, nextKey))
+			if (false == TestUtils.insertToBothArray(t, greatT, nextKey))
 			{
 				i--;
 				continue;
@@ -115,17 +160,19 @@ public class Tests
 
 	
 	//@Test
-	public void test_DELETE() throws IOException 
+	//@Repeat(times=10)
+	public void test_DELETE_fuzzer() throws IOException 
 	{
-		Logger logFile = new Logger("file_delete_fuzzer.log", ",");
+		java.util.Random gen = new java.util.Random();
 		
-		final int MAX_INSERTION = 2000;
+		Logger logFile = new Logger("file_delete_fuzzer_" + Integer.toString(gen.nextInt(999)) + ".log" , ",");
+		
+		final int MAX_INSERTION = 5000;
 		
 		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
 		RBTree greatT = new RBTree();
 		
-		java.util.Random gen = new java.util.Random();
-       
+		   
 		Integer[] insertionArr = new Integer[MAX_INSERTION];
 		
 		for (int i=0; i<MAX_INSERTION; i++)
@@ -133,8 +180,11 @@ public class Tests
 			int nextKey = gen.nextInt(999999999);
 			insertionArr[i] = nextKey;
 			
-			t.insert(nextKey, Integer.toString(nextKey)); 
-			greatT.insert(nextKey, Integer.toString(nextKey));
+			if (false == TestUtils.insertToBothArray(t, greatT, nextKey))
+			{
+				i--;
+				continue;
+			}
 			
 		}
 		
@@ -154,10 +204,11 @@ public class Tests
 		{
 			int deleteKey = deletionArr[i];
 			
+			// write basic info on each deleted node (color, parent color, children count, etc..)
+			logger.write(TestUtils.getLogInfo(t.lookupNode(deleteKey), greatT));
+			
 			t.delete(deleteKey);
 			greatT.delete(deleteKey);
-			
-			logger.write(TestUtils.getLogInfo(t.lookupNode(deleteKey), greatT));
 			
 			if (!TestUtils.CheckTrees(t, greatT))
 			{

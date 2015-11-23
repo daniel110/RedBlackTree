@@ -7,7 +7,7 @@ public class LogInfo
 	public String color;
 	public String parentColor;
 	public int childrenCount;
-	public int height;
+	public int blackHeight;
 	public boolean isMin;
 	public boolean isMax;
 	
@@ -18,14 +18,14 @@ public class LogInfo
 		this.color = color;
 		this.parentColor = parentColor;
 		this.childrenCount = childrenCount;
-		this.height = height;
+		this.blackHeight = height;
 		this.isMax = isMax;
 		this.isMin = isMin;
 	}
 	
 	public LogInfo()
 	{
-		this(0, "Red", "No Parent", 0, 0, false, false);
+		this(0, "Red", "Root", 0, 0, false, false);
 	}
 	
 }
