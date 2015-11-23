@@ -7,14 +7,19 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.Rule;
 import org.junit.Test;
 
 import mavnat.ex1.redblacktree.*;
 
 import mavnat.ex1.redblacktree.Test.Log.*;
+import mavnat.ex1.redblacktree.Test.Utils.*;
 
 public class Tests
 {
+	@Rule
+	public RepeatRule repeatRule = new RepeatRule();
+	
 	private boolean insertToBothArray(RedBTree<Integer, String> t, RBTree greatT, int nextKey)
 	{
 		if (-1 == greatT.insert(nextKey, Integer.toString(nextKey)))
@@ -63,10 +68,6 @@ public class Tests
 		for (int i = 0; i< badList.length; i++)
 		{
 			int element = badList[i];
-			if (51952 == element)
-			{
-				t.print();
-			}
 			
 			this.insertToBothArray(t, greatT, element);
 			if (!TestUtils.CheckTrees(t, greatT))
@@ -76,13 +77,13 @@ public class Tests
 		}
 	}
 	
-	
 	@Test
+	@Repeat(times=10)
 	public void test_INSERT_fuzzer() throws IOException 
 	{
 		Logger logFile = new Logger("file.log", ",");
 		
-		final int MAX_INSERTION = 2000;
+		final int MAX_INSERTION = 5000;
 		
 		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
 		RBTree greatT = new RBTree();

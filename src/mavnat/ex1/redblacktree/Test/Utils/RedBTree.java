@@ -1,4 +1,4 @@
-package mavnat.ex1.redblacktree.Test;
+package mavnat.ex1.redblacktree.Test.Utils;
 
 /* The authors of this work have released all rights to it and placed it
 in the public domain under the Creative Commons CC0 1.0 waiver

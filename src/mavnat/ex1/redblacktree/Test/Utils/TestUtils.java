@@ -1,7 +1,10 @@
-package mavnat.ex1.redblacktree.Test;
+package mavnat.ex1.redblacktree.Test.Utils;
 
 import mavnat.ex1.redblacktree.*;
 import mavnat.ex1.redblacktree.Test.Log.*;
+
+
+
 
 public class TestUtils 
 {
