@@ -8,3 +8,5 @@
 *.war
 *.ear
 /bin/
+
+file.log
