@@ -140,6 +140,33 @@ public class RBTree
 			}
 		}
 		
+		/**
+		 * @param node
+		 * Some RBNode that you want his brother.
+		 * @return
+		 * Null if the node is root.
+		 * Otherwise, return the brother.
+		 * brother can still be null even not root.
+		 */
+		public RBNode getBrother()
+		{
+			RBNode parent = this.getParent();
+			if (parent == null)
+			{
+				return null;
+			}
+
+			//	If we are the left child of his parent, we want his brother.
+			if (this == parent.getLeft())
+			{
+				return parent.getRight();
+			} 
+			else 
+			{
+				return parent.getLeft();			
+			}
+		}
+		
 		
 		/**
 		 * @param node
@@ -363,8 +390,9 @@ public class RBTree
 	public RBNode getSuccessor(RBNode node)
 	{
 		// First we want to check if this node has a right child,
-		// he must be the next node.
-		// If it does not then the next node is the parent.
+		// If so, we want the most left child (of the right child).
+		//
+		// If it does not have a right child, then the next node is the parent.
 		// The parent could be null. In that case, we don't have a next node.
 		// BUT if we are the right child of our parent then we need to find the first
 		// grand parent that we are the left child of him.
@@ -374,7 +402,12 @@ public class RBTree
 		//	Check right child.
 		if (walker.getRight() != null)
 		{
-			return walker.getRight();
+			walker = walker.getRight();
+			while (walker.getLeft() != null)
+			{
+				walker = walker.getLeft();
+			}
+			return walker;
 		}
 		
 		//	Look for the first parent that we are his left child.
@@ -496,7 +529,8 @@ public class RBTree
 	public int delete(int k) 
 	{
 		RBNode root = this.getRoot();
-		RBNode deleted_node = null;
+		RBNode currentNode = null;
+
 		
 		//	Check if the key is already in the tree.
 		SearchKeyInSubTreeResult search_result = this.searchKeyInSubTree(root, k);
@@ -505,13 +539,211 @@ public class RBTree
 			return -1;
 		}
 		
-		deleted_node = search_result.Result;
+		currentNode = search_result.Result;
 		
-		
-		
-		return deleted_node.getKey();
+		return this.deleteNode(currentNode);
 	}
 
+	
+	private int deleteNode(RBNode currentNode)
+	{
+		RBNode SuccessorNode = null;
+		RBNode doubleBlack = null;
+		RBNode replaceWith = null;
+		int changes = 0;
+		
+		//	If-children: Check if the node is a leaf
+		if (currentNode.leftNode == null && currentNode.rightNode == null)
+		{
+			//	If the node is a lonely root
+			if (currentNode.parentNode == null)
+			{
+				this.rootNode = null;
+				this.nodesCount = 0;
+				this.maxNode = null;
+				this.minNode = null;
+				return 0;
+			}
+
+			//	If currentNode is red then we finish first thing after the if-children block.
+			
+			if (currentNode.isRed == false)
+			{
+				RBNode brother = currentNode.getBrother();
+				if (brother == null)
+				{
+					//	Brother must exist so we have a problem.
+					return -2;
+				}
+				
+				if ((currentNode.parentNode.isRed == true) && (brother.isRed == false))
+				{
+					//	In this case we don't have double-black and we can finish
+					brother.isRed = true;
+					currentNode.parentNode.isRed = false;
+					this.replaceNodeFromParent(currentNode, null);
+					return 1;
+				}
+				else if ((currentNode.parentNode.isRed == false) && (brother.isRed == false))
+				{
+					brother.isRed = true;
+					doubleBlack = currentNode.parentNode;
+					//replaceWith = null;
+					changes++;
+					//this.replaceNodeFromParent(currentNode, null);
+				}
+				else
+				{
+					//	Parent red & brother res is not possible
+					//	Parent black and brother red is not possible because me and brother are leafs.
+					return -2;
+				}
+
+			}
+			
+		} else if (currentNode.leftNode != null) {
+			
+			//	We have only left child
+			//this.replaceNodeFromParent(currentNode, currentNode.leftNode);
+			doubleBlack = currentNode.leftNode;
+			replaceWith = currentNode.leftNode;
+			changes++;
+			//currentNode.leftNode = null;
+			//currentNode.parentNode = null;
+			
+		} else if (currentNode.rightNode != null) {
+			
+			//	We have only right child
+			//this.replaceNodeFromParent(currentNode, currentNode.rightNode);
+			doubleBlack = currentNode.rightNode;
+			replaceWith = currentNode.rightNode;
+			changes++;
+			//currentNode.rightNode = null;
+			//currentNode.parentNode = null;
+			
+		} else {
+			
+			SuccessorNode = this.getSuccessor(currentNode);
+			
+			//	We must have successor because we have two children
+			if (SuccessorNode == null)
+			{
+				return 0;
+			}
+				
+			//	Replace key and value between the current and the successor
+			//	and delete the successor.
+			currentNode.key = SuccessorNode.key;
+			currentNode.value = SuccessorNode.value;
+			return this.deleteNode(SuccessorNode);
+			
+		}
+
+		//	Replace the nodes
+		this.replaceNodeFromParent(currentNode, replaceWith);
+		
+		//	if currentNode is red then we don't change balance.
+		if (currentNode.isRed == true)
+		{
+			return changes; // TODO: check if this is always should be 0
+		}
+		
+		//	At this point double-black is root and we finished.
+		return this.deleteBalancer(doubleBlack, changes);
+		
+	}
+	
+	public int deleteBalancer(RBNode doubleBlack, int colorSwitchCounter)
+	{
+		RBNode brother = doubleBlack.getBrother();
+		RBNode parent = doubleBlack.getParent();
+		if (doubleBlack == null || brother == null)
+		{
+			return colorSwitchCounter;
+		}
+		
+		//	If brother exist then so does parent
+		
+		//	Check case 1
+		if (parent.isRed == false && brother.isRed == true)
+		{
+			colorSwitchCounter += 2;
+			doubleBlack = this.deleteRotate(doubleBlack, parent, brother);
+			brother = doubleBlack.getBrother();
+			parent = doubleBlack.getParent();
+		}
+
+		
+		if (brother.isRed == false)
+		{
+			//	Check case 2
+			if ((brother.getLeft().isRed = false) && (brother.getRight().isRed = false))
+			{
+				brother.isRed = true;
+				colorSwitchCounter += 1;
+				return this.deleteBalancer(parent, colorSwitchCounter);
+			}
+			//	Check case 3
+			if ((doubleBlack.isLeftChild() == true) && (brother.getLeft().isRed = true) && (brother.getRight().isRed = false))
+			{
+				colorSwitchCounter += 2;
+				this.deleteRotate(brother.getRight(), brother, brother.getLeft());
+			}
+			else if ((doubleBlack.isRightChild() == true) && (brother.getLeft().isRed = false) && (brother.getRight().isRed = true))
+			{
+				colorSwitchCounter += 2;
+				this.deleteRotate(brother.getLeft(), brother, brother.getRight());
+			}
+			//	Check case 4
+			if ((doubleBlack.isLeftChild() == true) && (brother.getRight().isRed = true))
+			{
+				colorSwitchCounter += 1;
+				brother.getRight().isRed = false;
+				this.deleteRotate(doubleBlack, parent, brother);
+			}
+			else if ((doubleBlack.isRightChild() == true) && (brother.getLeft().isRed = true))
+			{
+				colorSwitchCounter += 1;
+				brother.getRight().isRed = false;
+				this.deleteRotate(doubleBlack, parent, brother);
+			}
+		}
+		
+		
+		
+		return colorSwitchCounter;
+	}
+	
+	/**
+	 * Replace the node from his parent. Update his parent with newNode
+	 * and update newNode with the new parent.
+	 * No color is changed and no children are changed except for the parent-node relationship.
+	 * @param node
+	 * The node to be replaced with newNode.
+	 * Note that node does not changed
+	 * @param newNode
+	 * Can be null. if parent new child will be null.
+	 * @return
+	 */
+	private boolean replaceNodeFromParent(RBNode node, RBNode newNode)
+	{
+		if (node.parentNode != null)
+		{
+			if (node.isLeftChild() == true)
+			{
+				node.parentNode.leftNode = newNode;
+			} else {
+				node.parentNode.rightNode = newNode;
+			}
+			if (newNode != null)
+			{
+				newNode.parentNode = node.parentNode;
+			}
+			return true;
+		}
+		return false;
+	}
+	
 	/**
 	 * public int[] keysToArray()
 	 *
@@ -643,59 +875,36 @@ public class RBTree
 	/////////////////////////////////////
 	
 	////// cases for deletion ///////////
-	private void deleteRedLeaf(RBNode node)
+
+	private RBNode deleteRotate(RBNode node, RBNode parent, RBNode brother)
 	{
+		//RBNode brother = node.getBrother();
+		//RBNode parent = node.getParent();
+		//if ((brother == null) || !(node.parentNode.isRed == false && brother.isRed == true))
+		//{
+		//	return node;
+		//} 
 		
-	}
-	
-	private void deleteBlackParent_WithOneRedChild(RBNode node, boolean isLeftChild)
-	{
+		replaceNodeFromParent(parent, brother);
+		parent.setParentNode(brother);
 		
-	}
-	
-	private void deleteBlackLeaf_WithBlackParentAndRedSibling(RBNode node, boolean isParentLeftChild)
-	{
+		if (node.isLeftChild() == true)
+		{
+			parent.setRightNode(brother.getLeft());
+			brother.setLeftNode(parent);
+		}
+		else if (node.isRightChild() == true)
+		{
+			parent.setLeftNode(brother.getRight());
+			brother.setRightNode(parent);
+		}
 		
-	}
-	
-	
-	
-	private void deleteBlackLeaf_WithBlackParentAndBlackSibling(RBNode node)
-	{
+		parent.isRed = true;
+		brother.isRed = false;
 		
+		return node;
 	}
-	
-	private RBNode deleteDoubleBlack_Case1(RBNode node, boolean isParentLeftChild)
-	{
-		return null;
-	}
-	
-	/**
-	 * 
-	 * @param node
-	 * @return
-	 * 
-	 * @note: the only deletion case that can be looped
-	 */
-	private RBNode deleteDoubleBlack_Case2_ParentBlack(RBNode node)
-	{
-		return null;
-	}
-	
-	private RBNode deleteDoubleBlack_Case2_ParentRed(RBNode node)
-	{
-		return null;
-	}
-	
-	private RBNode deleteDoubleBlack_Case3(RBNode node)
-	{
-		return null;
-	}
-	
-	private RBNode deleteDoubleBlack_Case4(RBNode node)
-	{
-		return null;
-	}
+
 	////////////////////////////////////
 	
 	
