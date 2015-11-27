@@ -185,26 +185,28 @@ public class RBTree
 	 */
 	public class SearchKeyInSubTreeResult
 	{
-		
-		/**
-		 * The Parent member is Node that is the lowest node that should
-		 * have the key we looked for, within one of it's children.
-		 */
-		public RBNode Parent;
 		/**
 		 * The Result member is the actual Node with the wanted key.
-		 * If no node found, the Parent member should be the parent of the new key.
+		 * If no node found, this is null and the Parent member
+		 * should be the parent of the new key.
 		 */
 		public RBNode Result;
+		/**
+		 * The parent of the Result node.
+		 * If no node has been found then this is the potential parent
+		 * of the key.
+		 */
+		public RBNode Parent;
+
 		
 		public SearchKeyInSubTreeResult(RBNode result, RBNode parent)
 		{
 			this.Result = result;
 			this.Parent = parent;
 		}
-		public SearchKeyInSubTreeResult()
+		public SearchKeyInSubTreeResult(RBNode parent)
 		{
-			this.Result = null;
+			this.Result = parent;
 			this.Parent = null;
 		}		
 	}
@@ -257,6 +259,10 @@ public class RBTree
 	 */
 	public String min() 
 	{
+		if ((this.empty() == true) || (this.maxNode == null))
+		{
+			return null;
+		}
 		return this.minNode.getValue();
 	}
 
@@ -268,6 +274,10 @@ public class RBTree
 	 */
 	public String max() 
 	{
+		if ((this.empty() == true) || (this.maxNode == null))
+		{
+			return null;
+		}
 		return this.maxNode.getValue();
 	}
 	
@@ -282,7 +292,7 @@ public class RBTree
 		SearchKeyInSubTreeResult res = this.searchKeyInSubTree(this.getRoot(), k);
 		if (res == null)
 		{
-			//	Should not be here
+			//	Should not be here (Root is null)
 			return null;
 		}
 		RBNode node = res.Result;
@@ -304,8 +314,10 @@ public class RBTree
 	 * @param key
 	 * The key to look for.
 	 * @return
-	 * The RBNode that has the given key within the sub-tree.
-	 * null if key not found.
+	 * SearchKeyInSubTreeResult object that contains the result RBNode with its parent.
+	 * If no RBNode found then the object will contain only a potential parent.
+	 * Null is returned if the root is null and there is no potential
+	 * parent OR if sub_tree_root is null.
 	 */
 	private SearchKeyInSubTreeResult searchKeyInSubTree(RBNode sub_tree_root, int key)
 	{
@@ -318,7 +330,7 @@ public class RBTree
 			
 			if (current_key == key)
 			{
-				//	Return the found Node with it's parent.
+				//	Return the Node that has been found with its parent
 				return new SearchKeyInSubTreeResult(current_node, current_node.getParent());				
 			} 
 			else if ((current_key > key) && (current_node.getLeft() != null))
@@ -332,8 +344,8 @@ public class RBTree
 			else 
 			{
 				//	The children we need is null (Key not found)
-				//	But we still return the parent in case we want to insert a new key.
-				return new SearchKeyInSubTreeResult(null, current_node);
+				//	But we still return the potential parent in case we want to insert a new key.
+				return new SearchKeyInSubTreeResult(current_node);
 			}			
 		}
 		
@@ -437,7 +449,7 @@ public class RBTree
 
 	public int insertBalancer(RBNode node, int colorSwitchCounter)
 	{
-		if (node == this.rootNode)
+		if ((node == this.rootNode) || (node.parentNode == null))
 		{
 			// if we are here the root must be red
 			node.isRed = false;
@@ -447,9 +459,9 @@ public class RBTree
 		
 		if (node.isRed && node.parentNode.isRed)
 		{
-			if (node.isUncleRed())
+			if (node.isUncleRed() == true)
 			{
-				/// Case 1 
+				/// Case 1 - Move the red to the grandpa and balance again
 				colorSwitchCounter += 3;
 				return insertBalancer(this.insertCase1(node), colorSwitchCounter);
 			}
@@ -573,7 +585,8 @@ public class RBTree
 	////// cases for insertion ////////////
 	
 	/**
-	 * 
+	 * Move the red up the tree.
+	 * node must have a parent, a grandpa and an uncle!!
 	 * @param node
 	 * 
 	 * @note: the only insertion case that can be looped
