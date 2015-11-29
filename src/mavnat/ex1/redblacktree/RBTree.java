@@ -677,7 +677,7 @@ public class RBTree
 		if (brother.isRed == false)
 		{
 			//	Check case 2
-			if ((brother.getLeft().isRed = false) && (brother.getRight().isRed == false))
+			if ((brother.getLeft().isRed == false) && (brother.getRight().isRed == false))
 			{
 				brother.isRed = true;
 				colorSwitchCounter += 1;
