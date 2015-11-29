@@ -80,6 +80,18 @@ public class Tests
 	@Rule
 	public RepeatRule repeatRule = new RepeatRule();
 	
+	private static int Counter = 0;
+	private static String getNextCounterVal()
+	{
+		return Integer.toString(Tests.Counter++);
+	}
+	private static Logger getUniqeLogger(String testName) throws IOException
+	{
+		Logger logFile = new Logger(testName + Tests.getNextCounterVal() + ".log" , ",");
+		
+		return logFile;
+	}
+	
 	
 	/////////////////////////// Min Max Tests /////////////////////////////////////
 	@Test
@@ -108,8 +120,6 @@ public class Tests
 	{
 		java.util.Random gen = new java.util.Random();
 		
-		Logger logFile = new Logger("file_min_" + Integer.toString(gen.nextInt(999)) + ".log" , ",");
-		
 		final int MAX_INSERTION = 100;
 		
 		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
@@ -136,6 +146,7 @@ public class Tests
 		String result = greatT.min();
 		if (!expected.equals(result))
 		{
+			Logger logFile = Tests.getUniqeLogger("test_min_Check");
 			logFile.write(Arrays.toString(Arrays.copyOf(insertionArr,MAX_INSERTION)));
 			String messageLog = "Expexted: " + expected + ", Got: " + result;
 			logFile.write(messageLog);
@@ -148,8 +159,6 @@ public class Tests
 	public void test_max_Check() throws IOException 
 	{
 		java.util.Random gen = new java.util.Random();
-		
-		Logger logFile = new Logger("file_max_" + Integer.toString(gen.nextInt(999)) + ".log" , ",");
 		
 		final int MAX_INSERTION = 100;
 		
@@ -177,6 +186,7 @@ public class Tests
 		String result = greatT.max();
 		if (!expected.equals(result))
 		{
+			Logger logFile = Tests.getUniqeLogger("test_max_Check");
 			logFile.write(Arrays.toString(Arrays.copyOf(insertionArr,MAX_INSERTION)));
 			String messageLog = "Expexted: " + expected + ", Got: " + result;
 			logFile.write(messageLog);
@@ -194,8 +204,6 @@ public class Tests
 	{
 		java.util.Random gen = new java.util.Random();
 		
-		Logger logFile = new Logger("file_max_" + Integer.toString(gen.nextInt(999)) + ".log" , ",");
-		
 		final int MAX_INSERTION = 100;
 		
 		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
@@ -222,6 +230,7 @@ public class Tests
 		String result = greatT.max();
 		if (!expected.equals(result))
 		{
+			Logger logFile = Tests.getUniqeLogger("test_keysToArray");
 			logFile.write(Arrays.toString(Arrays.copyOf(insertionArr,MAX_INSERTION)));
 			String messageLog = "Expexted: " + expected + ", Got: " + result;
 			logFile.write(messageLog);
@@ -291,8 +300,6 @@ public class Tests
 	{
 		java.util.Random gen = new java.util.Random();
 		
-		Logger logFile = new Logger("file_insert_fuzzer_" + Integer.toString(gen.nextInt(999)) + ".log" , ",");
-		
 		final int MAX_INSERTION = 5000;
 		
 		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
@@ -314,6 +321,7 @@ public class Tests
 		
 			if (!TestUtils.CheckTrees(t, greatT))
 			{
+				Logger logFile = Tests.getUniqeLogger("test_INSERT_fuzzer");
 				logFile.write(Arrays.toString(Arrays.copyOf(insertionList, i+1)));
 				logFile.close();
 				
@@ -330,7 +338,7 @@ public class Tests
 	{
 		java.util.Random gen = new java.util.Random();
 		
-		Logger logFile = new Logger("file_delete_fuzzer_" + Integer.toString(gen.nextInt(999)) + ".log" , ",");
+		Logger logFile = Tests.getUniqeLogger("test_DELETE_fuzzer");
 		
 		final int MAX_INSERTION = 5000;
 		
@@ -365,14 +373,13 @@ public class Tests
 		Collections.shuffle(insertionList);
 		Integer[] deletionArr = insertionList.toArray(new Integer[insertionArr.length]);
 		
-		Logger logger = new Logger("logfile.log", ",");
-		
+
 		for (int i=0; i<MAX_INSERTION; i++)
 		{
 			int deleteKey = deletionArr[i];
 			
 			// write basic info on each deleted node (color, parent color, children count, etc..)
-			logger.write(TestUtils.getLogInfo(t.lookupNode(deleteKey), greatT));
+			logFile.write(TestUtils.getLogInfo(t.lookupNode(deleteKey), greatT));
 			
 			t.delete(deleteKey);
 			greatT.delete(deleteKey);
