@@ -14,7 +14,7 @@ public class Logger
 	public BufferedWriter bw;
 	public String logInfoDelimiter;
 	
-	public Logger(String fileName, String logInfoDelimiter) throws IOException
+	public Logger(String fileName, String logInfoDelimiter, boolean addLogFileHeader) throws IOException
 	{
 		FileWriter fw = new FileWriter(fileName); 
 		this.bw = new BufferedWriter(fw);
@@ -22,12 +22,21 @@ public class Logger
 		this.logInfoDelimiter = logInfoDelimiter;
 		
 		StringBuilder builder = new StringBuilder();
-		for(String str:Logger.FILE_HEADER)
-		{
-			builder.append(str + this.logInfoDelimiter);
-		}
 		
-		this.write(builder.toString());
+		if (addLogFileHeader)
+		{
+			for(String str:Logger.FILE_HEADER)
+			{
+				builder.append(str + this.logInfoDelimiter);
+			}
+			
+			this.write(builder.toString());
+		}
+	}
+	
+	public Logger(String fileName, String logInfoDelimiter) throws IOException
+	{
+		this(fileName, logInfoDelimiter, false);
 	}
 	
 	public void write(String str) throws IOException

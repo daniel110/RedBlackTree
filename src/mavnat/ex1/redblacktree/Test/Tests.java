@@ -85,11 +85,15 @@ public class Tests
 	{
 		return Integer.toString(Tests.Counter++);
 	}
-	private static Logger getUniqeLogger(String testName) throws IOException
+	private static Logger getUniqeLogger(String testName, boolean addLogFileHeader) throws IOException
 	{
-		Logger logFile = new Logger(testName + Tests.getNextCounterVal() + ".log" , ",");
+		Logger logFile = new Logger(testName + Tests.getNextCounterVal() + ".log" , ",", addLogFileHeader);
 		
 		return logFile;
+	}
+	private static Logger getUniqeLogger(String testName) throws IOException
+	{
+		return Tests.getUniqeLogger(testName, false);
 	}
 	
 	
@@ -147,9 +151,12 @@ public class Tests
 		if (!expected.equals(result))
 		{
 			Logger logFile = Tests.getUniqeLogger("test_min_Check");
+			
 			logFile.write(Arrays.toString(Arrays.copyOf(insertionArr,MAX_INSERTION)));
 			String messageLog = "Expexted: " + expected + ", Got: " + result;
 			logFile.write(messageLog);
+			logFile.close();
+			
 			fail(messageLog);
 		}
 	}
@@ -187,9 +194,12 @@ public class Tests
 		if (!expected.equals(result))
 		{
 			Logger logFile = Tests.getUniqeLogger("test_max_Check");
+			
 			logFile.write(Arrays.toString(Arrays.copyOf(insertionArr,MAX_INSERTION)));
 			String messageLog = "Expexted: " + expected + ", Got: " + result;
 			logFile.write(messageLog);
+			logFile.close();
+			
 			fail(messageLog);
 		}
 	}
@@ -204,13 +214,13 @@ public class Tests
 	{
 		java.util.Random gen = new java.util.Random();
 		
-		final int MAX_INSERTION = 100;
+		final int MAX_INSERTION = 50;
 		
 		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
 		RBTree greatT = new RBTree();
 		
 		   
-		Integer[] insertionArr = new Integer[MAX_INSERTION];
+		int[] insertionArr = new int[MAX_INSERTION];
 		
 		for (int i=0; i<MAX_INSERTION; i++)
 		{
@@ -226,20 +236,63 @@ public class Tests
 		
 		Arrays.sort(insertionArr);
 		
-		String expected = Integer.toString(insertionArr[MAX_INSERTION-1]);
-		String result = greatT.max();
-		if (!expected.equals(result))
+		int[] expected = insertionArr;
+		int[] result = greatT.keysToArray();
+		if (!Arrays.equals(result, expected))
 		{
 			Logger logFile = Tests.getUniqeLogger("test_keysToArray");
+			
 			logFile.write(Arrays.toString(Arrays.copyOf(insertionArr,MAX_INSERTION)));
 			String messageLog = "Expexted: " + expected + ", Got: " + result;
 			logFile.write(messageLog);
+			logFile.close();
+			
 			fail(messageLog);
 		}
 	}
 	
 	
-	
+	@Test
+	@Repeat(times=100)
+	public void test_valusToArray() throws IOException 
+	{
+		java.util.Random gen = new java.util.Random();
+		
+		final int MAX_INSERTION = 50;
+		
+		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
+		RBTree greatT = new RBTree();
+		
+		   
+		int[] insertionArr = new int[MAX_INSERTION];
+		
+		for (int i=0; i<MAX_INSERTION; i++)
+		{
+			int nextKey = gen.nextInt(999999999);
+			insertionArr[i] = nextKey;
+			
+			if (false == TestUtils.insertToBothArray(t, greatT, nextKey))
+			{
+				i--;
+				continue;
+			}				
+		}
+		
+		Arrays.sort(insertionArr);
+		
+		String[] expected=Arrays.toString(insertionArr).split("[\\[\\]]")[1].split(", "); 
+		String[] result = greatT.valuesToArray();
+		if (!Arrays.equals(result, expected))
+		{
+			Logger logFile = Tests.getUniqeLogger("test_valusToArray");
+			
+			logFile.write("Expected : " + Arrays.toString(Arrays.copyOf(insertionArr,MAX_INSERTION)));
+			logFile.write("Got : " + Arrays.toString(result));
+			logFile.close();
+			
+			fail("test_valusToArray failed - see log file");
+		}
+	}
 	////////////////////////// End Of Array Tests ///////////////////////////////
 	
 	
@@ -338,7 +391,7 @@ public class Tests
 	{
 		java.util.Random gen = new java.util.Random();
 		
-		Logger logFile = Tests.getUniqeLogger("test_DELETE_fuzzer");
+		Logger logFile = Tests.getUniqeLogger("test_DELETE_fuzzer", true);
 		
 		final int MAX_INSERTION = 5000;
 		
@@ -389,9 +442,13 @@ public class Tests
 				logFile.write(Arrays.toString(Arrays.copyOf(deletionArr, i+1)));
 				logFile.write("Failed on Key " + deleteKey);
 				logFile.close();
+				
+				fail("test_DELETE_fuzzer, see log file");
 			}
 			
 		}	
+		
+		logFile.close();
 	}
 
 	

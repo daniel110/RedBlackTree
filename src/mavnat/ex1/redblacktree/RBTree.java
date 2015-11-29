@@ -761,9 +761,9 @@ public class RBTree
 		RBNode walker = this.minNode;
 		int array_index = 0;
 		
-		while ((array_index < this.nodesCount) || (walker != null))
+		while ((array_index < this.nodesCount) && (walker != null))
 		{
-			res[array_index] = walker.getKey();
+			res[array_index++] = walker.getKey();
 			walker = this.getSuccessor(walker);			
 		}
 		
@@ -787,9 +787,9 @@ public class RBTree
 		RBNode walker = this.minNode;
 		int array_index = 0;
 		
-		while ((array_index < this.nodesCount) || (walker != null))
+		while ((array_index < this.nodesCount) && (walker != null))
 		{
-			res[array_index] = walker.getValue();
+			res[array_index++] = walker.getValue();
 			walker = this.getSuccessor(walker);			
 		}
 		
