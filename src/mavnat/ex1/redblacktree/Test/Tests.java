@@ -198,6 +198,8 @@ public class Tests
 			}
 			
 		}
+		//log insertion list
+		logFile.write(Arrays.toString(Arrays.copyOf(insertionArr, MAX_INSERTION+1)));
 		
 		if (!TestUtils.CheckTrees(t, greatT))
 		{
