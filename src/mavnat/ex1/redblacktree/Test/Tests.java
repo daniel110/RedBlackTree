@@ -81,8 +81,161 @@ public class Tests
 	public RepeatRule repeatRule = new RepeatRule();
 	
 	
+	/////////////////////////// Min Max Tests /////////////////////////////////////
+	@Test
+	public void test_min_max_only_root()
+	{
+		RBTree greatT = new RBTree();
+		
+		int insertKey = 10;
+		greatT.insert(10, Integer.toString(insertKey));
+		
+		if (! Integer.toString(insertKey).equals(greatT.min()))
+		{
+			fail ("Your min is not updates when the tree has only root element");
+		}
 
+		if (! Integer.toString(insertKey).equals(greatT.max()))
+		{
+			fail ("Your max is not updates when the tree has only root element");
+		}
 	
+	}
+	
+	@Test
+	@Repeat(times=500)
+	public void test_min_Check() throws IOException 
+	{
+		java.util.Random gen = new java.util.Random();
+		
+		Logger logFile = new Logger("file_min_" + Integer.toString(gen.nextInt(999)) + ".log" , ",");
+		
+		final int MAX_INSERTION = 100;
+		
+		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
+		RBTree greatT = new RBTree();
+		
+		   
+		Integer[] insertionArr = new Integer[MAX_INSERTION];
+		
+		for (int i=0; i<MAX_INSERTION; i++)
+		{
+			int nextKey = gen.nextInt(999999999);
+			insertionArr[i] = nextKey;
+			
+			if (false == TestUtils.insertToBothArray(t, greatT, nextKey))
+			{
+				i--;
+				continue;
+			}				
+		}
+		
+		Arrays.sort(insertionArr);
+		
+		String expected = Integer.toString(insertionArr[0]);
+		String result = greatT.min();
+		if (!expected.equals(result))
+		{
+			logFile.write(Arrays.toString(Arrays.copyOf(insertionArr,MAX_INSERTION)));
+			String messageLog = "Expexted: " + expected + ", Got: " + result;
+			logFile.write(messageLog);
+			fail(messageLog);
+		}
+	}
+	
+	@Test
+	@Repeat(times=500)
+	public void test_max_Check() throws IOException 
+	{
+		java.util.Random gen = new java.util.Random();
+		
+		Logger logFile = new Logger("file_max_" + Integer.toString(gen.nextInt(999)) + ".log" , ",");
+		
+		final int MAX_INSERTION = 100;
+		
+		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
+		RBTree greatT = new RBTree();
+		
+		   
+		Integer[] insertionArr = new Integer[MAX_INSERTION];
+		
+		for (int i=0; i<MAX_INSERTION; i++)
+		{
+			int nextKey = gen.nextInt(999999999);
+			insertionArr[i] = nextKey;
+			
+			if (false == TestUtils.insertToBothArray(t, greatT, nextKey))
+			{
+				i--;
+				continue;
+			}				
+		}
+		
+		Arrays.sort(insertionArr);
+		
+		String expected = Integer.toString(insertionArr[MAX_INSERTION-1]);
+		String result = greatT.max();
+		if (!expected.equals(result))
+		{
+			logFile.write(Arrays.toString(Arrays.copyOf(insertionArr,MAX_INSERTION)));
+			String messageLog = "Expexted: " + expected + ", Got: " + result;
+			logFile.write(messageLog);
+			fail(messageLog);
+		}
+	}
+	/////////////////////////// End of Min Max Tests ////////////////////////////
+	
+	
+	
+	////////////////////////// Array Tests //////////////////////////////////////
+	@Test
+	@Repeat(times=100)
+	public void test_keysToArray() throws IOException 
+	{
+		java.util.Random gen = new java.util.Random();
+		
+		Logger logFile = new Logger("file_max_" + Integer.toString(gen.nextInt(999)) + ".log" , ",");
+		
+		final int MAX_INSERTION = 100;
+		
+		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
+		RBTree greatT = new RBTree();
+		
+		   
+		Integer[] insertionArr = new Integer[MAX_INSERTION];
+		
+		for (int i=0; i<MAX_INSERTION; i++)
+		{
+			int nextKey = gen.nextInt(999999999);
+			insertionArr[i] = nextKey;
+			
+			if (false == TestUtils.insertToBothArray(t, greatT, nextKey))
+			{
+				i--;
+				continue;
+			}				
+		}
+		
+		Arrays.sort(insertionArr);
+		
+		String expected = Integer.toString(insertionArr[MAX_INSERTION-1]);
+		String result = greatT.max();
+		if (!expected.equals(result))
+		{
+			logFile.write(Arrays.toString(Arrays.copyOf(insertionArr,MAX_INSERTION)));
+			String messageLog = "Expexted: " + expected + ", Got: " + result;
+			logFile.write(messageLog);
+			fail(messageLog);
+		}
+	}
+	
+	
+	
+	////////////////////////// End Of Array Tests ///////////////////////////////
+	
+	
+	
+	////////////////////////// Insertion Tests //////////////////////////////////
 	@Test
 	public void test_INSERT_Down_Order()
 	{
@@ -111,7 +264,7 @@ public class Tests
 	}
 	
 	@Test
-	public void test_INSERT_Error_1() throws IOException
+	public void test_INSERT_Arr() throws IOException
 	{
 		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
 		RBTree greatT = new RBTree();
@@ -168,6 +321,7 @@ public class Tests
 			}
 		}
 	}
+	////////////////// End Of Insertion Tests /////////////////////////////////////////////////
 
 	
 	//@Test
@@ -199,7 +353,7 @@ public class Tests
 			
 		}
 		//log insertion list
-		logFile.write(Arrays.toString(Arrays.copyOf(insertionArr, MAX_INSERTION+1)));
+		logFile.write(Arrays.toString(Arrays.copyOf(insertionArr, MAX_INSERTION)));
 		
 		if (!TestUtils.CheckTrees(t, greatT))
 		{
@@ -225,15 +379,13 @@ public class Tests
 			
 			if (!TestUtils.CheckTrees(t, greatT))
 			{
-				logFile.write(Arrays.toString(deletionArr));
+				logFile.write(Arrays.toString(Arrays.copyOf(deletionArr, i+1)));
 				logFile.write("Failed on Key " + deleteKey);
 				logFile.close();
 			}
 			
-		}		
+		}	
 	}
-	
-	
-	
+
 	
 }

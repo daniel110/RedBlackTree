@@ -8,12 +8,11 @@ public class TestUtils
 {
 	public static boolean insertToBothArray(RedBTree<Integer, String> t, RBTree greatT, int nextKey)
 	{
+		t.insert(nextKey, Integer.toString(nextKey));
 		if (-1 == greatT.insert(nextKey, Integer.toString(nextKey)))
 		{
 			return false;
 		}
-		t.insert(nextKey, Integer.toString(nextKey));
-		
 		return true;
 	}
 	

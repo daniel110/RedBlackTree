@@ -233,8 +233,8 @@ public class RBTree
 		}
 		public SearchKeyInSubTreeResult(RBNode parent)
 		{
-			this.Result = parent;
-			this.Parent = null;
+			this.Result = null;
+			this.Parent = parent;
 		}		
 	}
 
@@ -441,9 +441,9 @@ public class RBTree
 		//	Check if the key is already in the tree.
 		SearchKeyInSubTreeResult searchResult = this.searchKeyInSubTree(this.rootNode, k);
 		
+		// searchResult == null only if root=null
 		if (null == searchResult)
 		{
-			// root is null
 			this.rootNode = newNode;
 			this.rootNode.setColor(false);
 			
@@ -453,6 +453,7 @@ public class RBTree
 			
 			return 1;
 		}
+		// if the key already exist the searchResult.Result will the relevant RBNode, else null
 		else if (null != searchResult.Result)
 		{
 			return -1;
@@ -477,7 +478,6 @@ public class RBTree
 		
 		// now we will balance the tree (if necessary)
 		return insertBalancer(newNode, 0);
-		
 	}
 
 	public int insertBalancer(RBNode node, int colorSwitchCounter)
