@@ -677,34 +677,34 @@ public class RBTree
 		if (brother.isRed == false)
 		{
 			//	Check case 2
-			if ((brother.getLeft().isRed = false) && (brother.getRight().isRed = false))
+			if ((brother.getLeft().isRed = false) && (brother.getRight().isRed == false))
 			{
 				brother.isRed = true;
 				colorSwitchCounter += 1;
 				return this.deleteBalancer(parent, colorSwitchCounter);
 			}
 			//	Check case 3
-			if ((doubleBlack.isLeftChild() == true) && (brother.getLeft().isRed = true) && (brother.getRight().isRed = false))
+			if ((doubleBlack.isLeftChild() == true) && (brother.getLeft().isRed == true) && (brother.getRight().isRed == false))
 			{
 				colorSwitchCounter += 2;
 				this.deleteRotate(brother.getRight(), brother, brother.getLeft());
 			}
-			else if ((doubleBlack.isRightChild() == true) && (brother.getLeft().isRed = false) && (brother.getRight().isRed = true))
+			else if ((doubleBlack.isRightChild() == true) && (brother.getLeft().isRed == false) && (brother.getRight().isRed == true))
 			{
 				colorSwitchCounter += 2;
 				this.deleteRotate(brother.getLeft(), brother, brother.getRight());
 			}
-			//	Check case 4
-			if ((doubleBlack.isLeftChild() == true) && (brother.getRight().isRed = true))
+			//	Check case 4 TODO: check
+			if ((doubleBlack.isLeftChild() == true) && (brother.getRight().isRed == true))
 			{
 				colorSwitchCounter += 1;
 				brother.getRight().isRed = false;
 				this.deleteRotate(doubleBlack, parent, brother);
 			}
-			else if ((doubleBlack.isRightChild() == true) && (brother.getLeft().isRed = true))
+			else if ((doubleBlack.isRightChild() == true) && (brother.getLeft().isRed == true))
 			{
 				colorSwitchCounter += 1;
-				brother.getRight().isRed = false;
+				brother.getLeft().isRed = false;
 				this.deleteRotate(doubleBlack, parent, brother);
 			}
 		}
