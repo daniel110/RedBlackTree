@@ -451,7 +451,7 @@ public class RBTree
 			this.nodesCount += 1;
 			this.updateMinMax(newNode);
 			
-			return 0;
+			return 1;
 		}
 		else if (null != searchResult.Result)
 		{
