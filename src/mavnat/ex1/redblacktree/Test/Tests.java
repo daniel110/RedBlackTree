@@ -294,48 +294,6 @@ public class Tests
 		}
 	}
 	////////////////////////// End Of Array Tests ///////////////////////////////
-	@Test
-	@Repeat(times=100)
-	public void test_valusToArray() throws IOException 
-	{
-		java.util.Random gen = new java.util.Random();
-		
-		final int MAX_INSERTION = 50;
-		
-		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
-		RBTree greatT = new RBTree();
-		
-		   
-		int[] insertionArr = new int[MAX_INSERTION];
-		
-		for (int i=0; i<MAX_INSERTION; i++)
-		{
-			int nextKey = gen.nextInt(999999999);
-			insertionArr[i] = nextKey;
-			
-			if (false == TestUtils.insertToBothArray(t, greatT, nextKey))
-			{
-				i--;
-				continue;
-			}				
-		}
-		
-		Arrays.sort(insertionArr);
-		
-		String[] expected=Arrays.toString(insertionArr).split("[\\[\\]]")[1].split(", "); 
-		String[] result = greatT.valuesToArray();
-		if (!Arrays.equals(result, expected))
-		{
-			Logger logFile = Tests.getUniqeLogger("test_valusToArray");
-			
-			logFile.write("Expected : " + Arrays.toString(Arrays.copyOf(insertionArr,MAX_INSERTION)));
-			logFile.write("Got : " + Arrays.toString(result));
-			logFile.close();
-			
-			fail("test_valusToArray failed - see log file");
-		}
-	}
-	
 	
 	///////////////////////////  Size Tests /////////////////////////////////////
 	
