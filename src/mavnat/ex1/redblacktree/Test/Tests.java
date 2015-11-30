@@ -294,6 +294,107 @@ public class Tests
 		}
 	}
 	////////////////////////// End Of Array Tests ///////////////////////////////
+	@Test
+	@Repeat(times=100)
+	public void test_valusToArray() throws IOException 
+	{
+		java.util.Random gen = new java.util.Random();
+		
+		final int MAX_INSERTION = 50;
+		
+		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
+		RBTree greatT = new RBTree();
+		
+		   
+		int[] insertionArr = new int[MAX_INSERTION];
+		
+		for (int i=0; i<MAX_INSERTION; i++)
+		{
+			int nextKey = gen.nextInt(999999999);
+			insertionArr[i] = nextKey;
+			
+			if (false == TestUtils.insertToBothArray(t, greatT, nextKey))
+			{
+				i--;
+				continue;
+			}				
+		}
+		
+		Arrays.sort(insertionArr);
+		
+		String[] expected=Arrays.toString(insertionArr).split("[\\[\\]]")[1].split(", "); 
+		String[] result = greatT.valuesToArray();
+		if (!Arrays.equals(result, expected))
+		{
+			Logger logFile = Tests.getUniqeLogger("test_valusToArray");
+			
+			logFile.write("Expected : " + Arrays.toString(Arrays.copyOf(insertionArr,MAX_INSERTION)));
+			logFile.write("Got : " + Arrays.toString(result));
+			logFile.close();
+			
+			fail("test_valusToArray failed - see log file");
+		}
+	}
+	
+	
+	///////////////////////////  Size Tests /////////////////////////////////////
+	
+	@Test
+	@Repeat(times=100)
+	public void test_empty() throws IOException 
+	{
+		RBTree greatT = new RBTree();
+		
+		if (!greatT.empty())
+		{
+			fail("Expected empty tree got not empty");
+		}
+		   
+		greatT.insert(1, "1");
+		
+		if (greatT.empty())
+		{
+			fail("Expected not empty tree got empty");
+		}
+		
+		//TODO: add a delete and check again if empty
+	}
+	
+	@Test
+	@Repeat(times=100)
+	public void test_size() throws IOException 
+	{
+		java.util.Random gen = new java.util.Random();
+		
+		final int MAX_INSERTION = gen.nextInt(300);
+		
+		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
+		RBTree greatT = new RBTree();
+		
+		   
+		int[] insertionArr = new int[MAX_INSERTION];
+		
+		for (int i=0; i<MAX_INSERTION; i++)
+		{
+			int nextKey = gen.nextInt(999999999);
+			insertionArr[i] = nextKey;
+			
+			if (false == TestUtils.insertToBothArray(t, greatT, nextKey))
+			{
+				i--;
+				continue;
+			}				
+		}
+		
+		int size = greatT.size();
+		if (MAX_INSERTION != size)
+		{
+			fail("Expcted size: " + MAX_INSERTION + ", Got: " + size);
+		}
+	}
+	
+	
+	///////////////////////////  End of Size Tests /////////////////////////////////////
 	
 	
 	
