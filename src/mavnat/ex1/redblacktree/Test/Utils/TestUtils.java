@@ -6,14 +6,11 @@ import mavnat.ex1.redblacktree.Test.Log.*;
 
 public class TestUtils 
 {
-	public static boolean insertToBothArray(RedBTree<Integer, String> t, RBTree greatT, int nextKey)
+	public static int insertToBothArray(RedBTree<Integer, String> t, RBTree greatT, int nextKey)
 	{
 		t.insert(nextKey, Integer.toString(nextKey));
-		if (-1 == greatT.insert(nextKey, Integer.toString(nextKey)))
-		{
-			return false;
-		}
-		return true;
+		
+		return greatT.insert(nextKey, Integer.toString(nextKey));
 	}
 	
 	public static boolean RecCheckTree(Node<Integer,String> node, RBTree.RBNode nodeCheck)

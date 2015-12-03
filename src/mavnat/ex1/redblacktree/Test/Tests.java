@@ -137,7 +137,7 @@ public class Tests
 			int nextKey = gen.nextInt(999999999);
 			insertionArr[i] = nextKey;
 			
-			if (false == TestUtils.insertToBothArray(t, greatT, nextKey))
+			if (-1 == TestUtils.insertToBothArray(t, greatT, nextKey))
 			{
 				i--;
 				continue;
@@ -180,7 +180,7 @@ public class Tests
 			int nextKey = gen.nextInt(999999999);
 			insertionArr[i] = nextKey;
 			
-			if (false == TestUtils.insertToBothArray(t, greatT, nextKey))
+			if (-1 == TestUtils.insertToBothArray(t, greatT, nextKey))
 			{
 				i--;
 				continue;
@@ -227,7 +227,7 @@ public class Tests
 			int nextKey = gen.nextInt(999999999);
 			insertionArr[i] = nextKey;
 			
-			if (false == TestUtils.insertToBothArray(t, greatT, nextKey))
+			if (-1 == TestUtils.insertToBothArray(t, greatT, nextKey))
 			{
 				i--;
 				continue;
@@ -271,7 +271,7 @@ public class Tests
 			int nextKey = gen.nextInt(999999999);
 			insertionArr[i] = nextKey;
 			
-			if (false == TestUtils.insertToBothArray(t, greatT, nextKey))
+			if (-1 == TestUtils.insertToBothArray(t, greatT, nextKey))
 			{
 				i--;
 				continue;
@@ -337,7 +337,7 @@ public class Tests
 			int nextKey = gen.nextInt(999999999);
 			insertionArr[i] = nextKey;
 			
-			if (false == TestUtils.insertToBothArray(t, greatT, nextKey))
+			if (-1 == TestUtils.insertToBothArray(t, greatT, nextKey))
 			{
 				i--;
 				continue;
@@ -425,7 +425,8 @@ public class Tests
 			int nextKey = gen.nextInt(MAX_INSERTION * 100);
 			insertionList[i] = nextKey;
 			
-			if (false == TestUtils.insertToBothArray(t, greatT, nextKey))
+			int colorCount = TestUtils.insertToBothArray(t, greatT, nextKey);
+			if (-1 == colorCount)
 			{
 				i--;
 				continue;
@@ -465,7 +466,7 @@ public class Tests
 			int nextKey = gen.nextInt(999999999);
 			insertionArr[i] = nextKey;
 			
-			if (false == TestUtils.insertToBothArray(t, greatT, nextKey))
+			if (-1 == TestUtils.insertToBothArray(t, greatT, nextKey))
 			{
 				i--;
 				continue;
@@ -494,7 +495,7 @@ public class Tests
 			logFile.write(TestUtils.getLogInfo(t.lookupNode(deleteKey), greatT));
 			
 			t.delete(deleteKey);
-			greatT.delete(deleteKey);
+			int colorCount = greatT.delete(deleteKey);
 			
 			if (!TestUtils.CheckTrees(t, greatT))
 			{
