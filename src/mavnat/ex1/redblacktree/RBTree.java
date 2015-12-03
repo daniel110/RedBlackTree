@@ -21,6 +21,7 @@ public class RBTree
 	
 	private int nodesCount;
 	
+	private int currentOperationSwitchColorCoutner;
 	
 	/**
 	 * public class RBNode
@@ -424,6 +425,33 @@ public class RBTree
 		return null;
 	}
 
+	
+	/**
+	 * @brief setColorAndUpdateCounter - calls node.setColor(isRed) + increase currentOperationSwitchColorCoutner
+	 * 			!! IMPORTAMT !!!
+	 * 			before using this function this.resetColorSwitchCounter() should be called;
+	 * 
+	 * @param node		node to upadte it's color
+	 * @param isRed		true = if the new color should be red, false = the color should be black
+	 * 
+	 * @note			the function increase currentOperationSwitchColorCoutner only if the 
+	 * 					the new color is different from the current one.
+	 */
+	private void setColorAndUpdateCounter(RBNode node, boolean isRed)
+	{
+		if(isRed != node.isRed())
+		{
+			this.currentOperationSwitchColorCoutner +=1;
+		}
+		
+		node.setColor(isRed);
+	}
+	
+	private void resetColorSwitchCounter()
+	{
+		this.currentOperationSwitchColorCoutner = 0;
+	}
+	
 	/**
 	 * public int insert(int k, String v)
 	 *
@@ -435,7 +463,10 @@ public class RBTree
 	 * @error return -2 if something bad happened
 	 */
 	public int insert(int k, String v) 
-	{
+	{	
+		//reset the color switch counter
+		this.resetColorSwitchCounter();
+		
 		RBNode newNode = new RBNode(k, v); // default color is red
 		
 		//	Check if the key is already in the tree.
@@ -445,13 +476,13 @@ public class RBTree
 		if (null == searchResult)
 		{
 			this.rootNode = newNode;
-			this.rootNode.setColor(false);
+			this.setColorAndUpdateCounter(this.rootNode, false);
 			
 			// update the number of nodes in the tree + min and max nodes
 			this.nodesCount += 1;
 			this.updateMinMax(newNode);
 			
-			return 1;
+			return this.currentOperationSwitchColorCoutner;
 		}
 		// if the key already exist the searchResult.Result will the relevant RBNode, else null
 		else if (null != searchResult.Result)
@@ -477,26 +508,26 @@ public class RBTree
 		
 		
 		// now we will balance the tree (if necessary)
-		return insertBalancer(newNode, 0);
+		return insertBalancer(newNode);
 	}
 
-	public int insertBalancer(RBNode node, int colorSwitchCounter)
+	public int insertBalancer(RBNode node)
 	{
 		if ((node == this.rootNode) || (node.parentNode == null))
 		{
 			// if we are here the root must be red
-			node.isRed = false;
-			return ++colorSwitchCounter;
+			this.setColorAndUpdateCounter(node, false);
+			
+			return this.currentOperationSwitchColorCoutner;
 		}
 		
 		
-		if (node.isRed && node.parentNode.isRed)
+		if (node.isRed() && node.parentNode.isRed())
 		{
 			if (node.isUncleRed() == true)
 			{
-				/// Case 1 - Move the red to the grandpa and balance again
-				colorSwitchCounter += 3;
-				return insertBalancer(this.insertCase1(node), colorSwitchCounter);
+				/// Case 1 - Move the "red problem" to the grandpa and balance again if necessary
+				return insertBalancer(this.insertCase1(node));
 			}
 			
 			boolean isParentLeftChild =  this.isParentLeftChild(node);
@@ -512,10 +543,9 @@ public class RBTree
 			{
 				return -2;
 			}
-			colorSwitchCounter += 2;
 		}
 		
-		return colorSwitchCounter;
+		return this.currentOperationSwitchColorCoutner;
 	}
 	
 	/**
@@ -528,6 +558,9 @@ public class RBTree
 	 */
 	public int delete(int k) 
 	{
+		//reset the color switch counter
+		this.resetColorSwitchCounter();
+		
 		RBNode root = this.getRoot();
 		RBNode currentNode = null;
 
@@ -820,6 +853,7 @@ public class RBTree
 	 * Move the red up the tree.
 	 * node must have a parent, a grandpa and an uncle!!
 	 * @param node
+	 * @return grandpa node
 	 * 
 	 * @note: the only insertion case that can be looped
 	 */
@@ -827,11 +861,11 @@ public class RBTree
 	{
 		RBNode parent = node.getParent();
 		
-		parent.setColor(false);
-		node.getUncle().setColor(false);
+		this.setColorAndUpdateCounter(parent, false);
+		this.setColorAndUpdateCounter(node.getUncle(), false);
 		
 		RBNode grandpa = parent.getParent();
-		grandpa.setColor(true);
+		this.setColorAndUpdateCounter(grandpa, true);
 		
 		return grandpa;
 	}
@@ -867,8 +901,8 @@ public class RBTree
 			return null;
 		}
 		
-		node.setColor(true);
-		node.getParent().setColor(false);
+		this.setColorAndUpdateCounter(node, true);
+		this.setColorAndUpdateCounter(node.getParent(), false);
 		
 		return node.getParent();
 	}
