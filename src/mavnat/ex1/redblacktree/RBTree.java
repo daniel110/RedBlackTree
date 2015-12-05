@@ -535,7 +535,7 @@ public class RBTree
 			
 			// update the number of nodes in the tree + min and max nodes
 			this.nodesCount += 1;
-			this.updateMinMax(newNode);
+			this.updateMinMaxAfterInsertion(newNode);
 			
 			return this.currentOperationSwitchColorCoutner;
 		}
@@ -547,7 +547,7 @@ public class RBTree
 		
 		// update the number of nodes in the tree + min and max nodes
 		this.nodesCount += 1;
-		this.updateMinMax(newNode);
+		this.updateMinMaxAfterInsertion(newNode);
 				
 		//	Here key is not in the tree and we have a parent to put the new node in
 		if (searchResult.Parent.getKey() > k)
@@ -585,15 +585,14 @@ public class RBTree
 				return insertBalancer(this.insertCase1(node));
 			}
 			
-			boolean isParentLeftChild =  this.isParentLeftChild(node);
-			
-			node = this.insertCase2(node, isParentLeftChild);
+		
+			node = this.insertCase2(node);
 			if (null == node)
 			{
 				return -2;
 			}
 			
-			node = this.insertCase3(node, isParentLeftChild);
+			node = this.insertCase3(node);
 			if (null == node)
 			{
 				return -2;
@@ -780,7 +779,7 @@ public class RBTree
 		//	Check case 1
 		if (parent.isRed == false && brother.isRed == true)
 		{
-			this.deleteRotateEx(parent, brother);
+			this.rotateEx(parent, brother);
 			this.setColorAndUpdateCounter(parent, true);
 			this.setColorAndUpdateCounter(brother, false);
 			brother = doubleBlack.getBrother();
@@ -807,13 +806,13 @@ public class RBTree
 			{
 				this.setColorAndUpdateCounter(brother, true);
 				this.setColorAndUpdateCounter(brother.getLeft(), false);
-				this.deleteRotateEx(brother, brother.getLeft());
+				this.rotateEx(brother, brother.getLeft());
 			}
 			else if ((doubleBlack.isRightChild() == true) && (this.isRedNode(brother.getLeft()) == false) && (this.isRedNode(brother.getRight()) == true))
 			{
 				this.setColorAndUpdateCounter(brother, true);
 				this.setColorAndUpdateCounter(brother.getRight(), false);
-				this.deleteRotateEx(brother, brother.getRight());
+				this.rotateEx(brother, brother.getRight());
 			}
 			
 			//	Update in case changed in case 3
@@ -826,14 +825,14 @@ public class RBTree
 				this.setColorAndUpdateCounter(brother, parent.isRed);
 				this.setColorAndUpdateCounter(parent, false);
 				this.setColorAndUpdateCounter(brother.getRight(), false);
-				this.deleteRotateEx(parent, brother);
+				this.rotateEx(parent, brother);
 			}
 			else if ((doubleBlack.isRightChild() == true) && (this.isRedNode(brother.getLeft()) == true))
 			{
 				this.setColorAndUpdateCounter(brother, parent.isRed);
 				this.setColorAndUpdateCounter(parent, false);
 				this.setColorAndUpdateCounter(brother.getLeft(), false);
-				this.deleteRotateEx(parent, brother);
+				this.rotateEx(parent, brother);
 			}
 		}
 		
@@ -929,7 +928,7 @@ public class RBTree
 	 * this file, not in another file.
 	 */
 	
-	private void updateMinMax(RBNode newNode)
+	private void updateMinMaxAfterInsertion(RBNode newNode)
 	{
 		//	Deal with max and min
 		if ((this.minNode == null) || (this.minNode.key > newNode.getKey()))
@@ -966,31 +965,24 @@ public class RBTree
 	}
 	
 	
-	private RBNode insertCase2(RBNode node, boolean isParentLeftChild)
+	private RBNode insertCase2(RBNode node)
 	{
-		if ((isParentLeftChild && node.isRightChild()))
+		boolean isParentLeftChild =  this.isParentLeftChild(node);
+		
+		if ((isParentLeftChild && node.isRightChild()) || 
+			(!isParentLeftChild && node.isLeftChild()) )
 		{
-			return this.leftRotate(node.getParent());
-		}
-		else if (!isParentLeftChild && node.isLeftChild())
-		{
-			return this.rightRotate(node.getParent());
+			return this.rotateEx(node.getParent(), node);
 		}
 		
 		return node;
 	}
 	
-	private RBNode insertCase3(RBNode node, boolean isParentLeftChild)
+	private RBNode insertCase3(RBNode node)
 	{
-		if (isParentLeftChild)
-		{
-			node = this.rightRotate(node.getParent().getParent());
-		}
-		else
-		{
-			node = this.leftRotate(node.getParent().getParent());
-		}
 		
+		node = rotateEx(node.getParent().getParent(), node.getParent());
+
 		if (node == null)
 		{
 			return null;
@@ -1007,50 +999,50 @@ public class RBTree
 
 	/**
 	 * This method rotates a tree with the right direction according to the
-	 * parent - brother relationship. The node it-self is not nessesary for rotation and
-	 * actually can be null (in case the parent has no children as in delete case 3).
+	 * parent - node relationship.
 	 * @result
-	 * The result is that the brother becomes the father of the parent node.
-	 * The parent becomes the child of the brother in the opposite direction of the original parent-brother.
-	 * The child of the brother (that is between the parent and the brother) becomes the child
-	 * of the parent instead the brother (the same side as the original brother).
+	 * The result is that the node becomes the father of the parent node.
+	 * The parent becomes the child of the node in the opposite direction of the original parent-node.
+	 * The child of the node (that is between the parent and the brother) becomes the child
+	 * of the parent instead the node (the same side as the original node).
 	 * This method updates relationships in all directions.
 	 * @param parent
-	 * The parent of the node.
-	 * @param brother
-	 * The brother of the node.
+	 * 			The parent of the node.
+	 * @param node
+	 * 			in Delete : it should be the brother's node
+	 * 			in Insert : it is the node itself
 	 * @return
 	 * The parent node.
 	 */
-	private RBNode deleteRotateEx(RBNode parent, RBNode brother)
+	private RBNode rotateEx(RBNode parent, RBNode node)
 	{
-		boolean brotherIsRight = brother.isRightChild();
+		boolean brotherIsRight = node.isRightChild();
 		
 		if (this.rootNode == parent)
 		{
-			this.rootNode = brother;
+			this.rootNode = node;
 		}
 		
-		replaceNode(parent, brother);
-		parent.setParentNode(brother);
+		replaceNode(parent, node);
+		parent.setParentNode(node);
 		
 		if (brotherIsRight == true)
 		{
-			parent.setRightNode(brother.getLeft());
-			if (brother.getLeft() != null)
+			parent.setRightNode(node.getLeft());
+			if (node.getLeft() != null)
 			{
-				brother.getLeft().setParentNode(parent);
+				node.getLeft().setParentNode(parent);
 			}
-			brother.setLeftNode(parent);
+			node.setLeftNode(parent);
 		}
 		else
 		{
-			parent.setLeftNode(brother.getRight());
-			if (brother.getRight() != null)
+			parent.setLeftNode(node.getRight());
+			if (node.getRight() != null)
 			{
-				brother.getRight().setParentNode(parent);
+				node.getRight().setParentNode(parent);
 			}
-			brother.setRightNode(parent);
+			node.setRightNode(parent);
 		}
 				
 		return parent;
@@ -1076,105 +1068,6 @@ public class RBTree
 		
 		return false;
 	}
-
-	/**
-	 * @param node
-	 * The X node in the Rotation.png diagram!
-	 * @return
-	 * The same X node. Null if rotate could not be performed.
-	 */
-	private RBNode leftRotate(RBNode node)
-	{
-		//save node parent info
-		RBNode nodeParent = node.getParent();
-		boolean isNodeLeftChild = node.isLeftChild();
-		////
-				
-		RBNode right_child = node.getRight();
-		if (right_child == null)
-		{
-			return null;
-		}
-		
-		RBNode left_child_of_right_child = right_child.getLeft();
-		node.setRightNode(left_child_of_right_child);
-		if (null != left_child_of_right_child)
-		{
-			left_child_of_right_child.setParentNode(node);
-		}
-		
-		node.setParentNode(right_child);
-		
-		right_child.setLeftNode(node);
-		
-		this.updateParentInfoAfterRotation(nodeParent, right_child, isNodeLeftChild);
-		
-		return node;
-	}
-	
-	/**
-	 * @param node
-	 * The Y node in the Rotation.png diagram!
-	 * @return
-	 * The same Y node. Null if rotate could not be performed.
-	 */
-	private RBNode rightRotate(RBNode node)
-	{
-		//save node parent info
-		RBNode nodeParent = node.getParent();
-		boolean isNodeLeftChild = node.isLeftChild();
-		////
-		
-		RBNode left_child = node.getLeft();
-		if (left_child == null)
-		{
-			return null;
-		}
-		
-		RBNode right_child_of_left_child = left_child.getRight();
-		node.setLeftNode(right_child_of_left_child);
-		if (null != right_child_of_left_child)
-		{
-			right_child_of_left_child.setParentNode(node);
-		}
-		
-		node.setParentNode(left_child);
-		
-		left_child.setRightNode(node);
-		
-		this.updateParentInfoAfterRotation(nodeParent, left_child, isNodeLeftChild);
-		
-		return node;
-	}
-	
-	/**
-	 * 
-	 * @param nodeParent		the parent of the node parameter (== NodeParam) 
-	 * 												given in rightRotate or leftRotate (see their doc)
-	 * @param newLocalRoot		the new local root node after the rotation
-	 * @param isNodeLeftChild   does the NodeParam was left or right child before the rotation
-	 */
-	private void updateParentInfoAfterRotation(RBNode nodeParent, RBNode newLocalRoot, boolean isNodeLeftChild)
-	{
-		newLocalRoot.setParentNode(nodeParent);
-		
-		if (null == nodeParent)
-		{
-			this.rootNode = newLocalRoot;
-			return;
-		}
-		
-		// if null != nodeParent 
-		if (isNodeLeftChild)
-		{
-			nodeParent.setLeftNode(newLocalRoot);
-		}
-		else
-		{
-			nodeParent.setRightNode(newLocalRoot);
-		}
-	}
-	
 	/////////////////////////////////////
 	
 	
