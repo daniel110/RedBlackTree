@@ -7,6 +7,19 @@ import mavnat.ex1.redblacktree.Test.Log.*;
 public class TestUtils 
 {
 	
+	public class CheckHeigtResult
+	{
+		public int height;
+		public int blackHeight;
+		public enumErrors state;
+		public CheckHeigtResult(int b, int h, enumErrors s)
+		{
+			this.blackHeight = b;
+			this.height = h;
+			this.state = s;
+		}
+	}
+	
 	public enum enumErrors
 	{
 		OK,
@@ -20,7 +33,10 @@ public class TestUtils
 		PARENT_SHOULD_NOT_NULL, 
 		PARENT_SHOULD_NULL,
 		PARENT_KEY,
-		NULL_POINTER
+		NULL_POINTER,
+		HEIGHT_WRONG,
+		RED_AFTER_RED,
+		PARENT_MISMATCH
 		
 	}
 	
@@ -36,6 +52,70 @@ public class TestUtils
 		t.delete(nextKey);
 		
 		return greatT.delete(nextKey);
+	}
+	
+	public CheckHeigtResult CheckTreeBlackHeight(RBTree.RBNode nodeCheck, RBTree.RBNode parent)
+	{
+		int blackHeight = 0;
+		int Height = 0;
+		CheckHeigtResult res;
+		
+		if (nodeCheck == null)
+		{
+			return new CheckHeigtResult(0, 0, enumErrors.OK);
+		}
+		
+		if (nodeCheck.getParent() != parent)
+		{
+			if (parent == null)
+			{
+				System.out.println("root rotated and his parent not updated");
+			} else {
+				System.out.println("parent mismatch: key: " + nodeCheck.getKey() + " parent: " + parent.getKey());
+			}
+			return new CheckHeigtResult(0, 0, enumErrors.PARENT_MISMATCH);
+		}
+		
+		res = CheckTreeBlackHeight(nodeCheck.getLeft(), nodeCheck);
+		if (enumErrors.OK != res.state)
+		{
+			return res;
+		}
+		blackHeight = res.blackHeight;
+		Height = res.height;
+		
+		res = CheckTreeBlackHeight(nodeCheck.getRight(), nodeCheck);
+		if (enumErrors.OK != res.state)
+		{
+			return res;
+		}
+		
+		if (res.height < Height)
+		{
+			res.height = Height;
+		}
+		
+		if (blackHeight != res.blackHeight)
+		{
+			res.state = enumErrors.HEIGHT_WRONG;
+			return res;
+		}
+		
+		res.height ++;
+		if (nodeCheck.isRed() == false)
+		{
+			res.blackHeight += 1;
+		}
+
+		if (nodeCheck.getParent() != null)
+		{
+			if (nodeCheck.getParent().isRed() == true && nodeCheck.isRed() == true)
+			{
+				res.state = enumErrors.RED_AFTER_RED;
+			}
+		}
+		
+		return res;	
 	}
 	
 	public static enumErrors RecCheckTree(Node<Integer,String> node, RBTree.RBNode nodeCheck)

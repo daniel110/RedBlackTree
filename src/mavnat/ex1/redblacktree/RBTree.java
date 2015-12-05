@@ -442,7 +442,7 @@ public class RBTree
 	 * Return the predecessor node in the tree.
 	 * If no predecessor node then null.
 	 */
-	public RBNode getPresecessor(RBNode node)
+	public RBNode getPredecessor(RBNode node)
 	{
 		//	Same logic as successor but right and left switched
 		RBNode walker = node;
@@ -660,7 +660,7 @@ public class RBTree
 		//	Update min and max
 		if (currentNode == this.maxNode)
 		{
-			this.maxNode = this.getPresecessor(currentNode);
+			this.maxNode = this.getPredecessor(currentNode);
 		}
 		if (currentNode == this.minNode)
 		{
@@ -687,7 +687,7 @@ public class RBTree
 		this.nodesCount -= 1;
 		
 		//	if currentNode is red then we don't change balance.
-		if (doubleBlack.isRed == false)
+		if (doubleBlack.isRed == false && currentNode.isRed == false)
 		{
 			this.deleteBalancer(doubleBlack);
 		}
@@ -827,7 +827,7 @@ public class RBTree
 		//	Root deletion handled above so min and max are diffrent at this point
 		if (currentNode == this.maxNode)
 		{
-			this.maxNode = this.getPresecessor(currentNode);
+			this.maxNode = this.getPredecessor(currentNode);
 		}
 		if (currentNode == this.minNode)
 		{
@@ -846,6 +846,15 @@ public class RBTree
 		//	At this point double-black should be set
 		return this.deleteBalancer(doubleBlack);
 		
+	}
+	
+	public boolean isRedNode(RBNode node)
+	{
+		if ((node != null) && (node.isRed == true))
+		{
+			return true;
+		}
+		return false;
 	}
 	
 	public int deleteBalancer(RBNode doubleBlack)
@@ -867,7 +876,7 @@ public class RBTree
 		}
 		
 		//	Check case 0.1
-		if (doubleBlack.isLeaf() && brother.isLeaf())
+		if (brother.isLeaf())
 		{
 			//	Brother must be black so we check parent
 			this.setColorAndUpdateCounter(brother, true);
@@ -894,23 +903,29 @@ public class RBTree
 		if (brother.isRed == false)
 		{
 			//	Check case 2
-			if ((brother.getLeft().isRed == false) && (brother.getRight().isRed == false))
+			if ((this.isRedNode(brother.getLeft()) == false) && (this.isRedNode(brother.getRight()) == false))
 			{
 				this.setColorAndUpdateCounter(brother, true);
+				if (parent.isRed == true)
+				{
+					this.setColorAndUpdateCounter(parent, false);
+					return this.currentOperationSwitchColorCoutner;
+				}
+				
 				return this.deleteBalancer(parent);
 			}
 			//	Check case 3
-			if ((doubleBlack.isLeftChild() == true) && (brother.getLeft().isRed == true) && (brother.getRight().isRed == false))
+			if ((doubleBlack.isLeftChild() == true) && (this.isRedNode(brother.getLeft()) == true) && (this.isRedNode(brother.getRight()) == false))
 			{
 				this.setColorAndUpdateCounter(brother, true);
 				this.setColorAndUpdateCounter(brother.getLeft(), false);
-				this.deleteRotate(brother.getRight(), brother, brother.getLeft());
+				this.deleteRotateEx(brother, brother.getLeft());
 			}
-			else if ((doubleBlack.isRightChild() == true) && (brother.getLeft().isRed == false) && (brother.getRight().isRed == true))
+			else if ((doubleBlack.isRightChild() == true) && (this.isRedNode(brother.getLeft()) == false) && (this.isRedNode(brother.getRight()) == true))
 			{
 				this.setColorAndUpdateCounter(brother, true);
 				this.setColorAndUpdateCounter(brother.getRight(), false);
-				this.deleteRotate(brother.getLeft(), brother, brother.getRight());
+				this.deleteRotateEx(brother, brother.getRight());
 			}
 			
 			//	Update in case changed in case 3
@@ -918,14 +933,14 @@ public class RBTree
 			parent = doubleBlack.getParent();
 			
 			//	Check case 4 TODO: check
-			if ((doubleBlack.isLeftChild() == true) && (brother.getRight().isRed == true))
+			if ((doubleBlack.isLeftChild() == true) && (this.isRedNode(brother.getRight()) == true))
 			{
 				this.setColorAndUpdateCounter(brother, parent.isRed);	// TODO: is it count?
 				this.setColorAndUpdateCounter(parent, false);
 				this.setColorAndUpdateCounter(brother.getRight(), false);
 				this.deleteRotate(doubleBlack, parent, brother);
 			}
-			else if ((doubleBlack.isRightChild() == true) && (brother.getLeft().isRed == true))
+			else if ((doubleBlack.isRightChild() == true) && (this.isRedNode(brother.getLeft()) == true))
 			{
 				this.setColorAndUpdateCounter(brother, parent.isRed);	// TODO: is it count?
 				this.setColorAndUpdateCounter(parent, false);
@@ -1102,6 +1117,40 @@ public class RBTree
 	
 	////// cases for deletion ///////////
 
+	private RBNode deleteRotateEx(RBNode parent, RBNode brother)
+	{
+		boolean brotherIsRight = brother.isRightChild();
+		
+		if (this.rootNode == parent)
+		{
+			this.rootNode = brother;
+		}
+		
+		replaceNode(parent, brother);
+		parent.setParentNode(brother);
+		
+		if (brotherIsRight == true)
+		{
+			parent.setRightNode(brother.getLeft());
+			if (brother.getLeft() != null)
+			{
+				brother.getLeft().setParentNode(parent);
+			}
+			brother.setLeftNode(parent);
+		}
+		else
+		{
+			parent.setLeftNode(brother.getRight());
+			if (brother.getRight() != null)
+			{
+				brother.getRight().setParentNode(parent);
+			}
+			brother.setRightNode(parent);
+		}
+				
+		return parent;
+	}
+	
 	private RBNode deleteRotate(RBNode node, RBNode parent, RBNode brother)
 	{
 		
@@ -1116,11 +1165,19 @@ public class RBTree
 		if (node.isLeftChild() == true)
 		{
 			parent.setRightNode(brother.getLeft());
+			if (brother.getLeft() != null)
+			{
+				brother.getLeft().setParentNode(parent);
+			}
 			brother.setLeftNode(parent);
 		}
 		else if (node.isRightChild() == true)
 		{
 			parent.setLeftNode(brother.getRight());
+			if (brother.getRight() != null)
+			{
+				brother.getRight().setParentNode(parent);
+			}
 			brother.setRightNode(parent);
 		}
 				

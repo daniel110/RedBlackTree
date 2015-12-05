@@ -14,6 +14,7 @@ import mavnat.ex1.redblacktree.*;
 
 import mavnat.ex1.redblacktree.Test.Log.*;
 import mavnat.ex1.redblacktree.Test.Utils.*;
+import mavnat.ex1.redblacktree.Test.Utils.TestUtils.CheckHeigtResult;
 
 
 /****
@@ -322,7 +323,6 @@ public class Tests
 			fail("Expected empty after delete. tree not empty");
 		}
 		
-		//TODO: add a delete and check again if empty
 	}
 	
 	@Test
@@ -493,14 +493,14 @@ public class Tests
 
 	
 	@Test
-	//@Repeat(times=10)
+	@Repeat(times=10)
 	public void test_DELETE_fuzzer() throws IOException 
 	{
 		java.util.Random gen = new java.util.Random();
 		
 		Logger logFile = Tests.getUniqeLogger("test_DELETE_fuzzer", true);
 		
-		final int MAX_INSERTION = 10;
+		final int MAX_INSERTION = 5000;
 		
 		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
 		RBTree greatT = new RBTree();
@@ -510,7 +510,7 @@ public class Tests
 		
 		for (int i=0; i<MAX_INSERTION; i++)
 		{
-			int nextKey = gen.nextInt(30);
+			int nextKey = gen.nextInt(500000);
 			insertionArr[i] = nextKey;
 			
 			if (-1 == TestUtils.insertToBothArray(t, greatT, nextKey))
@@ -533,7 +533,7 @@ public class Tests
 		Collections.shuffle(insertionList);
 		Integer[] deletionArr = insertionList.toArray(new Integer[insertionArr.length]);
 		
-		t.print();
+		TestUtils aaa= new TestUtils();
 
 		for (int i=0; i<MAX_INSERTION; i++)
 		{
@@ -541,17 +541,24 @@ public class Tests
 			
 			// write basic info on each deleted node (color, parent color, children count, etc..)
 			logFile.write(TestUtils.getLogInfo(t.lookupNode(deleteKey), greatT));
+
+			//System.out.println("state:");
+			//greatT.print();
+			//System.out.println("delete " + deleteKey);
+			greatT.delete(deleteKey);
 			
-			t.delete(deleteKey);
-			int colorCount = greatT.delete(deleteKey);
-			TestUtils.enumErrors res = TestUtils.CheckTrees(t, greatT);
-			if (res != TestUtils.enumErrors.OK)
+			
+			
+			//int colorCount = greatT.delete(deleteKey);
+			
+			TestUtils.CheckHeigtResult res = aaa.CheckTreeBlackHeight(greatT.getRoot(), null);
+			if (res.state != TestUtils.enumErrors.OK)
 			{
-				t.print();
+				System.out.println("After state:");
 				greatT.print();
 				logFile.write(Arrays.toString(Arrays.copyOf(deletionArr, i+1)));
 				logFile.write("Failed on Key " + deleteKey);
-				logFile.write("Failed error " + res.toString());
+				logFile.write("Failed error " + res.state.toString());
 				logFile.close();
 				
 				fail("test_DELETE_fuzzer, see log file");
