@@ -2,7 +2,6 @@ package mavnat.ex1.redblacktree.Test;
 
 import static org.junit.Assert.*;
 
-import java.awt.print.Printable;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -15,7 +14,6 @@ import mavnat.ex1.redblacktree.*;
 
 import mavnat.ex1.redblacktree.Test.Log.*;
 import mavnat.ex1.redblacktree.Test.Utils.*;
-import mavnat.ex1.redblacktree.Test.Utils.TestUtils.CheckHeigtResult;
 
 
 /****
@@ -360,8 +358,109 @@ public class Tests
 	}
 	
 	
-	///////////////////////////  End of Size Tests /////////////////////////////////////
+	///////////////////////////  End of Size Tests /////////////////////////////
 	
+	
+	///////////////////////  Search + getRoot Tests /////////////////////////
+	
+	@Test
+	@Repeat(times=100)
+	public void test_search()
+	{
+		java.util.Random gen = new java.util.Random();
+		
+		final int MAX_INSERTION = 50;
+		
+		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
+		RBTree greatT = new RBTree();
+		
+		int keyNotInTree = gen.nextInt(5000);
+		String result = greatT.search(keyNotInTree);
+		if (null != result)
+		{
+			fail("looked for " + keyNotInTree + " but it was found, even though the tree is empty");
+		}	
+		   
+		Integer[] insertionArr = new Integer[MAX_INSERTION];
+		
+		for (int i=0; i<MAX_INSERTION; i++)
+		{
+			int nextKey = gen.nextInt(5000);
+			insertionArr[i] = nextKey;
+			
+			if (-1 == TestUtils.insertToBothArray(t, greatT, nextKey))
+			{
+				i--;
+				continue;
+			}				
+		}
+		
+		List<Integer> insertionList = Arrays.asList(insertionArr);
+		Collections.shuffle(insertionList);
+		Integer[] searchArr = insertionList.toArray(new Integer[insertionArr.length]);
+		
+		
+		final int CHECK_SEARCH_COUNT = 20;
+		for (int i=0; i<CHECK_SEARCH_COUNT; i++)
+		{
+			int serachKey = searchArr[i];
+			result = greatT.search(serachKey);
+			if (null == result || !result.equals(Integer.toString(serachKey)))
+			{
+				fail("looked for " + serachKey + " but it was not found in the tree");
+			}			
+		}
+		
+		keyNotInTree = 6000;
+		result = greatT.search(keyNotInTree);
+		if (null != result)
+		{
+			fail("looked for " + keyNotInTree + " but it was, found even though it was not in the tree");
+		}	
+		
+	}
+	
+	@Test
+	@Repeat(times=100)
+	public void test_getRoot()
+	{
+		java.util.Random gen = new java.util.Random();
+		
+		final int MAX_INSERTION = 50;
+		
+		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
+		RBTree greatT = new RBTree();
+		
+		int keyNotInTree = gen.nextInt(5000);
+		String result = greatT.search(keyNotInTree);
+		if (null != result)
+		{
+			fail("looked for " + keyNotInTree + " but it was found, even though the tree is empty");
+		}	
+		   
+		Integer[] insertionArr = new Integer[MAX_INSERTION];
+		
+		for (int i=0; i<MAX_INSERTION; i++)
+		{
+			int nextKey = gen.nextInt(5000);
+			insertionArr[i] = nextKey;
+			
+			if (-1 == TestUtils.insertToBothArray(t, greatT, nextKey))
+			{
+				i--;
+				continue;
+			}				
+		}
+		
+		int correctRootKey = TestUtils.getCorrectRoot(t);
+		if (greatT.getRoot().getKey() != correctRootKey)
+		{
+			fail("expected " + correctRootKey + " To be root, Got: " + greatT.getRoot().getKey());
+		}	
+		
+	}
+	
+	///////////////////// End Of Search + getRoot Tests /////////////////////////
 	
 	
 	////////////////////////// Insertion Tests //////////////////////////////////
@@ -414,50 +513,11 @@ public class Tests
 	}
 	
 	
-	@Test
-	public void test_DELETE_Simple() throws IOException
-	{
-		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
-		RBTree greatT = new RBTree();
-		TestUtils.enumErrors res;
-
-			
-		TestUtils.insertToBothArray(t, greatT, 7);
-		TestUtils.insertToBothArray(t, greatT, 10);
-		TestUtils.insertToBothArray(t, greatT, 3);
-		
-		//t.print();
-		TestUtils.deleteFromBothArray(t, greatT, 7);
-		//t.print();
-		res = TestUtils.CheckTrees(t, greatT);
-		if (res != TestUtils.enumErrors.OK)
-		{
-			fail(res.toString());
-		}
-		
-		TestUtils.deleteFromBothArray(t, greatT, 3);
-		res = TestUtils.CheckTrees(t, greatT);
-		if (res != TestUtils.enumErrors.OK)
-		{
-			fail(res.toString());
-		}
-		
-		TestUtils.deleteFromBothArray(t, greatT, 10);
-		res = TestUtils.CheckTrees(t, greatT);
-		if (res != TestUtils.enumErrors.OK)
-		{
-			fail(res.toString());
-		}
-
-	}
-	
 	
 	@Test
 	@Repeat(times=10)
 	public void test_INSERT_fuzzer() throws IOException 
 	{
-		//fail("Test disabled");
-		
 		java.util.Random gen = new java.util.Random();
 		
 		final int MAX_INSERTION = 5000;
@@ -490,7 +550,45 @@ public class Tests
 			}
 		}
 	}
-	////////////////// End Of Insertion Tests /////////////////////////////////////////////////
+	////////////////// End Of Insertion Tests ///////////////////////////////////////
+
+	
+	////////////////////////// Deletion Tests //////////////////////////////////////
+	@Test
+	public void test_DELETE_Simple() throws IOException
+	{
+		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
+		RBTree greatT = new RBTree();
+		TestUtils.enumErrors res;
+
+			
+		TestUtils.insertToBothArray(t, greatT, 7);
+		TestUtils.insertToBothArray(t, greatT, 10);
+		TestUtils.insertToBothArray(t, greatT, 3);
+		
+		TestUtils.deleteFromBothArray(t, greatT, 7);
+		
+		res = TestUtils.CheckTrees(t, greatT);
+		if (res != TestUtils.enumErrors.OK)
+		{
+			fail(res.toString());
+		}
+		
+		TestUtils.deleteFromBothArray(t, greatT, 3);
+		res = TestUtils.CheckTrees(t, greatT);
+		if (res != TestUtils.enumErrors.OK)
+		{
+			fail(res.toString());
+		}
+		
+		TestUtils.deleteFromBothArray(t, greatT, 10);
+		res = TestUtils.CheckTrees(t, greatT);
+		if (res != TestUtils.enumErrors.OK)
+		{
+			fail(res.toString());
+		}
+
+	}
 
 	
 	@Test
@@ -542,15 +640,7 @@ public class Tests
 			
 			// write basic info on each deleted node (color, parent color, children count, etc..)
 			logFile.write(TestUtils.getLogInfo(t.lookupNode(deleteKey), greatT));
-
-			//System.out.println("state:");
-			//TestUtils.printTree(greatT);
-			//System.out.println("delete " + deleteKey);
 			greatT.delete(deleteKey);
-			
-			
-			
-			//int colorCount = greatT.delete(deleteKey);
 			
 			TestUtils.CheckHeigtResult res = aaa.CheckTreeBlackHeight(greatT.getRoot(), null);
 			if (res.state != TestUtils.enumErrors.OK)
@@ -570,5 +660,6 @@ public class Tests
 		logFile.close();
 	}
 
+	//////////////////////////End of Deletion Tests //////////////////////////////////
 	
 }

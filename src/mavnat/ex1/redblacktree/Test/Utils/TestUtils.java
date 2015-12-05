@@ -157,11 +157,11 @@ public class TestUtils
 			return enumErrors.OK;
 		}
 		
-		if ((nodeCheck == null) && (nodeCheck != null))
+		if ((node == null) && (nodeCheck != null))
 		{			
 			return enumErrors.NULL_POINTER;
 		}
-		else if ((nodeCheck != null) && (nodeCheck == null))
+		else if ((node != null) && (nodeCheck == null))
 		{
 			return enumErrors.NULL_POINTER;
 		}
@@ -255,6 +255,12 @@ public class TestUtils
 		info.isMin = (node.key == t.getMinKey()) ? true : false;
 		
 		return info;
+	}
+
+	public static int getCorrectRoot(RedBTree<Integer, String> t) 
+	{
+		return t.root.key;
+
 	}
 
 }
