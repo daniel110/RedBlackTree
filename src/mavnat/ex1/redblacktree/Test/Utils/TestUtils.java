@@ -1,6 +1,7 @@
 package mavnat.ex1.redblacktree.Test.Utils;
 
 import mavnat.ex1.redblacktree.*;
+import mavnat.ex1.redblacktree.RBTree.RBNode;
 import mavnat.ex1.redblacktree.Test.Log.*;
 
 
@@ -39,6 +40,9 @@ public class TestUtils
 		PARENT_MISMATCH
 		
 	}
+
+
+	private static final int INDENT_STEP = 4;
 	
 	public static int insertToBothArray(RedBTree<Integer, String> t, RBTree greatT, int nextKey)
 	{
@@ -53,6 +57,34 @@ public class TestUtils
 		
 		return greatT.delete(nextKey);
 	}
+	
+	
+    public static void printTree(RBTree n) {
+        printHelper(n.getRoot(), 0);
+    }
+	
+    public static void printTree(RBNode n) {
+        printHelper(n, 0);
+    }
+
+    private static void printHelper(RBNode n, int indent) {
+        if (n == null) {
+            System.out.print("<empty tree>");
+            return;
+        }
+        if (n.getRight() != null) {
+            printHelper(n.getRight(), indent + INDENT_STEP);
+        }
+        for (int i = 0; i < indent; i++)
+            System.out.print(" ");
+        if (n.isRed() == false)
+            System.out.println(n.getKey());
+        else
+            System.out.println("<" + n.getKey() + ">");
+        if (n.getLeft() != null) {
+            printHelper(n.getLeft(), indent + INDENT_STEP);
+        }
+    }
 	
 	public CheckHeigtResult CheckTreeBlackHeight(RBTree.RBNode nodeCheck, RBTree.RBNode parent)
 	{

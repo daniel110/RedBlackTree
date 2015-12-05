@@ -2,6 +2,7 @@ package mavnat.ex1.redblacktree.Test;
 
 import static org.junit.Assert.*;
 
+import java.awt.print.Printable;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -455,7 +456,7 @@ public class Tests
 	@Repeat(times=10)
 	public void test_INSERT_fuzzer() throws IOException 
 	{
-		fail("Test disabled");
+		//fail("Test disabled");
 		
 		java.util.Random gen = new java.util.Random();
 		
@@ -543,7 +544,7 @@ public class Tests
 			logFile.write(TestUtils.getLogInfo(t.lookupNode(deleteKey), greatT));
 
 			//System.out.println("state:");
-			//greatT.print();
+			//TestUtils.printTree(greatT);
 			//System.out.println("delete " + deleteKey);
 			greatT.delete(deleteKey);
 			
@@ -555,7 +556,7 @@ public class Tests
 			if (res.state != TestUtils.enumErrors.OK)
 			{
 				System.out.println("After state:");
-				greatT.print();
+				TestUtils.printTree(greatT);
 				logFile.write(Arrays.toString(Arrays.copyOf(deletionArr, i+1)));
 				logFile.write("Failed on Key " + deleteKey);
 				logFile.write("Failed error " + res.state.toString());

@@ -13,8 +13,6 @@ package mavnat.ex1.redblacktree;
  */
 public class RBTree 
 {
-	private static final int INDENT_STEP = 4;
-
 	private RBNode rootNode;
 	
 	private RBNode minNode;
@@ -169,6 +167,9 @@ public class RBTree
 			}
 		}
 		
+		/**
+		 * @return True if the node has no children
+		 */
 		public boolean isLeaf()
 		{
 			if ((this.rightNode == null) && (this.leftNode == null))
@@ -197,6 +198,9 @@ public class RBTree
 		}
 		
 		
+		/**
+		 * @return True if this node is the LeftNode of his parent
+		 */
 		public boolean isLeftChild()
 		{
 			if ((this.getParent() != null) && (this.getParent().getLeft() == this))
@@ -205,6 +209,9 @@ public class RBTree
 			}
 			return false;
 		}
+		/**
+		 * @return True if this node is the RightNode of his parent
+		 */
 		public boolean isRightChild()
 		{
 			if ((this.getParent() != null) && (this.getParent().getRight() == this))
@@ -329,7 +336,7 @@ public class RBTree
 		SearchKeyInSubTreeResult res = this.searchKeyInSubTree(this.getRoot(), k);
 		if (res == null)
 		{
-			//	Should not be here (Root is null)
+			//	Root is null
 			return null;
 		}
 		RBNode node = res.Result;
@@ -667,6 +674,7 @@ public class RBTree
 			this.minNode = this.getSuccessor(currentNode);
 		}		
 		
+		//	Has two children or one Child.
 		if (currentNode.leftNode == null && currentNode.rightNode == null)
 		{
 			isNullNode = true;
@@ -687,6 +695,9 @@ public class RBTree
 		this.nodesCount -= 1;
 		
 		//	if currentNode is red then we don't change balance.
+		//
+		//	if currentNode is a leaf then doubleBlack==currentNode here. If the leaf was black
+		//	we still want to balance it.
 		if (doubleBlack.isRed == false && currentNode.isRed == false)
 		{
 			this.deleteBalancer(doubleBlack);
@@ -705,149 +716,18 @@ public class RBTree
 		return this.currentOperationSwitchColorCoutner;		
 	}
 	
-    public void print() {
-        printHelper(this.rootNode, 0);
-    }
-
-    private static void printHelper(RBNode n, int indent) {
-        if (n == null) {
-            System.out.print("<empty tree>");
-            return;
-        }
-        if (n.rightNode != null) {
-            printHelper(n.rightNode, indent + INDENT_STEP);
-        }
-        for (int i = 0; i < indent; i++)
-            System.out.print(" ");
-        if (n.isRed == false)
-            System.out.println(n.key);
-        else
-            System.out.println("<" + n.key + ">");
-        if (n.leftNode != null) {
-            printHelper(n.leftNode, indent + INDENT_STEP);
-        }
-    }
 	
-	private int deleteNodeOld(RBNode currentNode)
-	{
-		RBNode SuccessorNode = null;
-		RBNode doubleBlack = null;
-		RBNode replaceWith = null;
-		
-		//	If-children: Check if the node is a leaf
-		if (currentNode.leftNode == null && currentNode.rightNode == null)
-		{
-			//	If the node is a lonely root
-			if (currentNode.parentNode == null)
-			{
-				this.rootNode = null;
-				this.nodesCount = 0;
-				this.maxNode = null;
-				this.minNode = null;
-				return 0;
-			}
-
-			//	If currentNode is red then we finish first thing after the if-children block.
-			
-			if (currentNode.isRed == false)
-			{
-				RBNode brother = currentNode.getBrother();
-				if (brother == null)
-				{
-					//	Brother must exist so we have a problem.
-					return -2;
-				}
-				
-				if ((currentNode.parentNode.isRed == true) && (brother.isRed == false))
-				{
-					//	In this case we don't have double-black and we can finish
-					this.setColorAndUpdateCounter(brother, true);
-					this.setColorAndUpdateCounter(currentNode.parentNode, false);
-					this.replaceNode(currentNode, null);
-					return this.currentOperationSwitchColorCoutner;
-				}
-				else if ((currentNode.parentNode.isRed == false) && (brother.isRed == false))
-				{
-					this.setColorAndUpdateCounter(brother, true);
-					doubleBlack = currentNode.parentNode;
-					//	replaceWith is already null here
-					//	replaceWith = null;
-				}
-				else
-				{
-					//	Parent red & brother res is not possible
-					//	Parent black and brother red is not possible because me and brother are leafs.
-					return -2;
-				}
-
-			}
-			
-		} else if (currentNode.leftNode != null) {
-			
-			//	We have only left child
-			//this.replaceNodeFromParent(currentNode, currentNode.leftNode);
-			doubleBlack = currentNode.leftNode;
-			replaceWith = currentNode.leftNode;
-			this.setColorAndUpdateCounter(replaceWith, false);
-			//currentNode.leftNode = null;
-			//currentNode.parentNode = null;
-			
-		} else if (currentNode.rightNode != null) {
-			
-			//	We have only right child
-			//this.replaceNodeFromParent(currentNode, currentNode.rightNode);
-			doubleBlack = currentNode.rightNode;
-			replaceWith = currentNode.rightNode;
-			this.setColorAndUpdateCounter(replaceWith, false);
-			//currentNode.rightNode = null;
-			//currentNode.parentNode = null;
-			
-		} else {
-			
-			SuccessorNode = this.getSuccessor(currentNode);
-			
-			//	We must have successor because we have two children
-			if (SuccessorNode == null)
-			{
-				return 0;
-			}
-				
-			//	Replace key and value between the current and the successor
-			//	and delete the successor.
-			currentNode.key = SuccessorNode.key;
-			currentNode.value = SuccessorNode.value;
-			return this.deleteNode(SuccessorNode);
-			
-		}
-
-		//	Update count
-		this.nodesCount -= 1;
-		
-		//	update min and max
-		//	Root deletion handled above so min and max are diffrent at this point
-		if (currentNode == this.maxNode)
-		{
-			this.maxNode = this.getPredecessor(currentNode);
-		}
-		if (currentNode == this.minNode)
-		{
-			this.minNode = this.getSuccessor(currentNode);
-		}
-		
-		//	Replace the nodes
-		this.replaceNode(currentNode, replaceWith);
-		
-		//	if currentNode is red then we don't change balance.
-		if (currentNode.isRed == true)
-		{
-			return this.currentOperationSwitchColorCoutner;
-		}
-		
-		//	At this point double-black should be set
-		return this.deleteBalancer(doubleBlack);
-		
-	}
-	
+	/**
+	 * @note
+	 * This method is used to check if a node is red.
+	 * If node is null the method returns false.
+	 * 
+	 * This behavior is needed in case you want to check a child of a node and it could be null.
+	 * In that case, black is still the right answer.
+	 * @param node
+	 * @return
+	 * 
+	 */
 	public boolean isRedNode(RBNode node)
 	{
 		if ((node != null) && (node.isRed == true))
@@ -857,7 +737,14 @@ public class RBTree
 		return false;
 	}
 	
-	public int deleteBalancer(RBNode doubleBlack)
+	/**
+	 * Perform a balance operation on a double black node.
+	 * @note
+	 * This method assumes the node is black.
+	 * @param doubleBlack
+	 * @return The number of color switches.
+	 */
+	private int deleteBalancer(RBNode doubleBlack)
 	{
 		RBNode brother = doubleBlack.getBrother();
 		RBNode parent = doubleBlack.getParent();
@@ -875,24 +762,25 @@ public class RBTree
 			return this.currentOperationSwitchColorCoutner;
 		}
 		
+		//	TODO: Check if this logic is necessary. it looks like not.
 		//	Check case 0.1
-		if (brother.isLeaf())
-		{
-			//	Brother must be black so we check parent
-			this.setColorAndUpdateCounter(brother, true);
-			if (parent.isRed)
-			{
-				this.setColorAndUpdateCounter(parent, false);
-				return this.currentOperationSwitchColorCoutner;
-			}
-			return this.deleteBalancer(parent);
-		}
+//		if (brother.isLeaf())
+//		{
+//			//	Brother must be black so we check parent
+//			this.setColorAndUpdateCounter(brother, true);
+//			if (parent.isRed)
+//			{
+//				this.setColorAndUpdateCounter(parent, false);
+//				return this.currentOperationSwitchColorCoutner;
+//			}
+//			return this.deleteBalancer(parent);
+//		}
 		
 		
 		//	Check case 1
 		if (parent.isRed == false && brother.isRed == true)
 		{
-			doubleBlack = this.deleteRotate(doubleBlack, parent, brother);
+			this.deleteRotateEx(parent, brother);
 			this.setColorAndUpdateCounter(parent, true);
 			this.setColorAndUpdateCounter(brother, false);
 			brother = doubleBlack.getBrother();
@@ -932,20 +820,20 @@ public class RBTree
 			brother = doubleBlack.getBrother();
 			parent = doubleBlack.getParent();
 			
-			//	Check case 4 TODO: check
+			//	Check case 4
 			if ((doubleBlack.isLeftChild() == true) && (this.isRedNode(brother.getRight()) == true))
 			{
-				this.setColorAndUpdateCounter(brother, parent.isRed);	// TODO: is it count?
+				this.setColorAndUpdateCounter(brother, parent.isRed);
 				this.setColorAndUpdateCounter(parent, false);
 				this.setColorAndUpdateCounter(brother.getRight(), false);
-				this.deleteRotate(doubleBlack, parent, brother);
+				this.deleteRotateEx(parent, brother);
 			}
 			else if ((doubleBlack.isRightChild() == true) && (this.isRedNode(brother.getLeft()) == true))
 			{
-				this.setColorAndUpdateCounter(brother, parent.isRed);	// TODO: is it count?
+				this.setColorAndUpdateCounter(brother, parent.isRed);
 				this.setColorAndUpdateCounter(parent, false);
 				this.setColorAndUpdateCounter(brother.getLeft(), false);
-				this.deleteRotate(doubleBlack, parent, brother);
+				this.deleteRotateEx(parent, brother);
 			}
 		}
 		
@@ -1117,6 +1005,23 @@ public class RBTree
 	
 	////// cases for deletion ///////////
 
+	/**
+	 * This method rotates a tree with the right direction according to the
+	 * parent - brother relationship. The node it-self is not nessesary for rotation and
+	 * actually can be null (in case the parent has no children as in delete case 3).
+	 * @result
+	 * The result is that the brother becomes the father of the parent node.
+	 * The parent becomes the child of the brother in the opposite direction of the original parent-brother.
+	 * The child of the brother (that is between the parent and the brother) becomes the child
+	 * of the parent instead the brother (the same side as the original brother).
+	 * This method updates relationships in all directions.
+	 * @param parent
+	 * The parent of the node.
+	 * @param brother
+	 * The brother of the node.
+	 * @return
+	 * The parent node.
+	 */
 	private RBNode deleteRotateEx(RBNode parent, RBNode brother)
 	{
 		boolean brotherIsRight = brother.isRightChild();
@@ -1151,39 +1056,6 @@ public class RBTree
 		return parent;
 	}
 	
-	private RBNode deleteRotate(RBNode node, RBNode parent, RBNode brother)
-	{
-		
-		if (this.rootNode == parent)
-		{
-			this.rootNode = brother;
-		}
-		
-		replaceNode(parent, brother);
-		parent.setParentNode(brother);
-		
-		if (node.isLeftChild() == true)
-		{
-			parent.setRightNode(brother.getLeft());
-			if (brother.getLeft() != null)
-			{
-				brother.getLeft().setParentNode(parent);
-			}
-			brother.setLeftNode(parent);
-		}
-		else if (node.isRightChild() == true)
-		{
-			parent.setLeftNode(brother.getRight());
-			if (brother.getRight() != null)
-			{
-				brother.getRight().setParentNode(parent);
-			}
-			brother.setRightNode(parent);
-		}
-				
-		return node;
-	}
-
 	////////////////////////////////////
 	
 	
