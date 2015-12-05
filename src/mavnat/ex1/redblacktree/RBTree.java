@@ -110,8 +110,6 @@ public class RBTree
 		////////////////////////////
 		
 		/**
-		 * @param node
-		 * Some RBNode that you want his uncle.
 		 * @return
 		 * Null if the node is root or node parent is root.
 		 * Otherwise, return the uncle.
@@ -141,8 +139,6 @@ public class RBTree
 		}
 		
 		/**
-		 * @param node
-		 * Some RBNode that you want his brother.
 		 * @return
 		 * Null if the node is root.
 		 * Otherwise, return the brother.
@@ -180,8 +176,6 @@ public class RBTree
 		}
 		
 		/**
-		 * @param node
-		 * Some RBNode that you want his uncle.
 		 * @return
 		 * True if the uncle of this node exist and is red.
 		 * False otherwise.
@@ -223,38 +217,6 @@ public class RBTree
 
 	}
 	
-	/**
-	 * SearchKeyInSubTreeResult Class is the object that searchKeyInSubTree returns.
-	 * It allows us to use that function in order to find a Node and for insert a new node.
-	 */
-	public class SearchKeyInSubTreeResult
-	{
-		/**
-		 * The Result member is the actual Node with the wanted key.
-		 * If no node found, this is null and the Parent member
-		 * should be the parent of the new key.
-		 */
-		public RBNode Result;
-		/**
-		 * The parent of the Result node.
-		 * If no node has been found then this is the potential parent
-		 * of the key.
-		 */
-		public RBNode Parent;
-
-		
-		public SearchKeyInSubTreeResult(RBNode result, RBNode parent)
-		{
-			this.Result = result;
-			this.Parent = parent;
-		}
-		public SearchKeyInSubTreeResult(RBNode parent)
-		{
-			this.Result = null;
-			this.Parent = parent;
-		}		
-	}
-
 	/**
 	 * public RBNode getRoot()
 	 *
@@ -350,6 +312,38 @@ public class RBTree
 	}
 	
 
+	/**
+	 * SearchKeyInSubTreeResult Class is the object that searchKeyInSubTree returns.
+	 * It allows us to use that function in order to find a Node and for insert a new node.
+	 */
+	private class SearchKeyInSubTreeResult
+	{
+		/**
+		 * The Result member is the actual Node with the wanted key.
+		 * If no node found, this is null and the Parent member
+		 * should be the parent of the new key.
+		 */
+		public RBNode Result;
+		/**
+		 * The parent of the Result node.
+		 * If no node has been found then this is the potential parent
+		 * of the key.
+		 */
+		public RBNode Parent;
+
+		
+		public SearchKeyInSubTreeResult(RBNode result, RBNode parent)
+		{
+			this.Result = result;
+			this.Parent = parent;
+		}
+		public SearchKeyInSubTreeResult(RBNode parent)
+		{
+			this.Result = null;
+			this.Parent = parent;
+		}		
+	}
+
 	
 	/**
 	 * @param sub_tree_root
@@ -397,115 +391,7 @@ public class RBTree
 		return null;
 	}
 	
-	/**
-	 * @param node
-	 * The node to get his successor 
-	 * @return
-	 * Return the successor node in the tree.
-	 * If no successor node then null.
-	 */
-	public RBNode getSuccessor(RBNode node)
-	{
-		// First we want to check if this node has a right child,
-		// If so, we want the most left child (of the right child).
-		//
-		// If it does not have a right child, then the next node is the parent.
-		// The parent could be null. In that case, we don't have a next node.
-		// BUT if we are the right child of our parent then we need to find the first
-		// grand parent that we are the left child of him.
 	
-		RBNode walker = node;
-		
-		//	Check right child.
-		if (walker.getRight() != null)
-		{
-			walker = walker.getRight();
-			while (walker.getLeft() != null)
-			{
-				walker = walker.getLeft();
-			}
-			return walker;
-		}
-		
-		//	Look for the first parent that we are his left child.
-		while (walker.getParent() != null)
-		{
-			if (walker.getParent().getLeft() == walker)
-			{
-				return walker.getParent();
-			}	
-			walker = walker.getParent();
-		}
-		
-		//	No parent found.
-		return null;
-	}
-
-	
-	/**
-	 * @param node
-	 * The node to get his predecessor 
-	 * @return
-	 * Return the predecessor node in the tree.
-	 * If no predecessor node then null.
-	 */
-	public RBNode getPredecessor(RBNode node)
-	{
-		//	Same logic as successor but right and left switched
-		RBNode walker = node;
-		
-		//	Check right child.
-		if (walker.getLeft() != null)
-		{
-			walker = walker.getLeft();
-			while (walker.getRight() != null)
-			{
-				walker = walker.getRight();
-			}
-			return walker;
-		}
-		
-		//	Look for the first parent that we are his right child.
-		while (walker.getParent() != null)
-		{
-			if (walker.getParent().getRight() == walker)
-			{
-				return walker.getParent();
-			}	
-			walker = walker.getParent();
-		}
-		
-		//	No parent found.
-		return null;
-	}
-	
-	/**
-	 * @brief setColorAndUpdateCounter - calls node.setColor(isRed) + increase currentOperationSwitchColorCoutner
-	 * 			!! IMPORTAMT !!!
-	 * 			before using this function this.resetColorSwitchCounter() should be called;
-	 * 
-	 * @param node		node to upadte it's color
-	 * @param isRed		true = if the new color should be red, false = the color should be black
-	 * 
-	 * @note			the function increase currentOperationSwitchColorCoutner only if the 
-	 * 					the new color is different from the current one.
-	 */
-	private void setColorAndUpdateCounter(RBNode node, boolean isRed)
-	{
-		if (node != null)
-		{
-			if(isRed != node.isRed())
-			{
-				this.currentOperationSwitchColorCoutner +=1;
-			}
-			node.setColor(isRed);
-		}
-	}
-	
-	private void resetColorSwitchCounter()
-	{
-		this.currentOperationSwitchColorCoutner = 0;
-	}
 	
 	/**
 	 * public int insert(int k, String v)
@@ -566,6 +452,11 @@ public class RBTree
 		return insertBalancer(newNode);
 	}
 
+	/**
+	 * insertBalancer - after an inseration in function balance the tree
+	 * @param node	- the node which might be a problem (problem == it is red + it's parent is also red)
+	 * @return number of color switches
+	 */
 	public int insertBalancer(RBNode node)
 	{
 		if ((node == this.rootNode) || (node.parentNode == null))
@@ -716,25 +607,6 @@ public class RBTree
 	}
 	
 	
-	/**
-	 * @note
-	 * This method is used to check if a node is red.
-	 * If node is null the method returns false.
-	 * 
-	 * This behavior is needed in case you want to check a child of a node and it could be null.
-	 * In that case, black is still the right answer.
-	 * @param node
-	 * @return
-	 * 
-	 */
-	public boolean isRedNode(RBNode node)
-	{
-		if ((node != null) && (node.isRed == true))
-		{
-			return true;
-		}
-		return false;
-	}
 	
 	/**
 	 * Perform a balance operation on a double black node.
@@ -923,24 +795,6 @@ public class RBTree
 		return res;
 	}
 
-	/**
-	 * If you wish to implement classes, other than RBTree and RBNode, do it in
-	 * this file, not in another file.
-	 */
-	
-	private void updateMinMaxAfterInsertion(RBNode newNode)
-	{
-		//	Deal with max and min
-		if ((this.minNode == null) || (this.minNode.key > newNode.getKey()))
-		{
-			this.minNode = newNode;
-		}
-		if ((this.maxNode == null) || (this.maxNode.key < newNode.getKey()))
-		{
-			this.maxNode = newNode;
-		}
-	}
-	
 	////// cases for insertion ////////////
 	
 	/**
@@ -995,8 +849,7 @@ public class RBTree
 	}
 	/////////////////////////////////////
 	
-	////// cases for deletion ///////////
-
+	///////// helper functions /////////
 	/**
 	 * This method rotates a tree with the right direction according to the
 	 * parent - node relationship.
@@ -1048,10 +901,7 @@ public class RBTree
 		return parent;
 	}
 	
-	////////////////////////////////////
 	
-	
-	///////// helper functions /////////
 	private boolean isParentLeftChild(RBNode node)
 	{
 		// check validity
@@ -1067,6 +917,149 @@ public class RBTree
 		}
 		
 		return false;
+	}
+	
+	private void updateMinMaxAfterInsertion(RBNode newNode)
+	{
+		//	Deal with max and min
+		if ((this.minNode == null) || (this.minNode.key > newNode.getKey()))
+		{
+			this.minNode = newNode;
+		}
+		if ((this.maxNode == null) || (this.maxNode.key < newNode.getKey()))
+		{
+			this.maxNode = newNode;
+		}
+	}
+	
+	/**
+	 * @note
+	 * This method is used to check if a node is red.
+	 * If node is null the method returns false.
+	 * 
+	 * This behavior is needed in case you want to check a child of a node and it could be null.
+	 * In that case, black is still the right answer.
+	 * @param node
+	 * @return
+	 * 
+	 */
+	private boolean isRedNode(RBNode node)
+	{
+		if ((node != null) && (node.isRed == true))
+		{
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * @param node
+	 * The node to get his successor 
+	 * @return
+	 * Return the successor node in the tree.
+	 * If no successor node then null.
+	 */
+	public RBNode getSuccessor(RBNode node)
+	{
+		// First we want to check if this node has a right child,
+		// If so, we want the most left child (of the right child).
+		//
+		// If it does not have a right child, then the next node is the parent.
+		// The parent could be null. In that case, we don't have a next node.
+		// BUT if we are the right child of our parent then we need to find the first
+		// grand parent that we are the left child of him.
+	
+		RBNode walker = node;
+		
+		//	Check right child.
+		if (walker.getRight() != null)
+		{
+			walker = walker.getRight();
+			while (walker.getLeft() != null)
+			{
+				walker = walker.getLeft();
+			}
+			return walker;
+		}
+		
+		//	Look for the first parent that we are his left child.
+		while (walker.getParent() != null)
+		{
+			if (walker.getParent().getLeft() == walker)
+			{
+				return walker.getParent();
+			}	
+			walker = walker.getParent();
+		}
+		
+		//	No parent found.
+		return null;
+	}
+
+	
+	/**
+	 * @param node
+	 * The node to get his predecessor 
+	 * @return
+	 * Return the predecessor node in the tree.
+	 * If no predecessor node then null.
+	 */
+	public RBNode getPredecessor(RBNode node)
+	{
+		//	Same logic as successor but right and left switched
+		RBNode walker = node;
+		
+		//	Check right child.
+		if (walker.getLeft() != null)
+		{
+			walker = walker.getLeft();
+			while (walker.getRight() != null)
+			{
+				walker = walker.getRight();
+			}
+			return walker;
+		}
+		
+		//	Look for the first parent that we are his right child.
+		while (walker.getParent() != null)
+		{
+			if (walker.getParent().getRight() == walker)
+			{
+				return walker.getParent();
+			}	
+			walker = walker.getParent();
+		}
+		
+		//	No parent found.
+		return null;
+	}
+	
+	/**
+	 * @brief setColorAndUpdateCounter - calls node.setColor(isRed) + increase currentOperationSwitchColorCoutner
+	 * 			!! IMPORTAMT !!!
+	 * 			before using this function this.resetColorSwitchCounter() should be called;
+	 * 
+	 * @param node		node to upadte it's color
+	 * @param isRed		true = if the new color should be red, false = the color should be black
+	 * 
+	 * @note			the function increase currentOperationSwitchColorCoutner only if the 
+	 * 					the new color is different from the current one.
+	 */
+	private void setColorAndUpdateCounter(RBNode node, boolean isRed)
+	{
+		if (node != null)
+		{
+			if(isRed != node.isRed())
+			{
+				this.currentOperationSwitchColorCoutner +=1;
+			}
+			node.setColor(isRed);
+		}
+	}
+	
+	private void resetColorSwitchCounter()
+	{
+		this.currentOperationSwitchColorCoutner = 0;
 	}
 	/////////////////////////////////////
 	
