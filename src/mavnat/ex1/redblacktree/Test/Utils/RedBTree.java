@@ -1,5 +1,6 @@
 package mavnat.ex1.redblacktree.Test.Utils;
 
+
 /* The authors of this work have released all rights to it and placed it
 in the public domain under the Creative Commons CC0 1.0 waiver
 (http://creativecommons.org/publicdomain/zero/1.0/).
@@ -261,7 +262,8 @@ public class RedBTree<K extends Comparable<? super K>,V>
             return;  // Key not found, do nothing
         if (n.left != null && n.right != null) {
             // Copy key/value from predecessor and then delete it instead
-            Node<K,V> pred = maximumNode(n.left);
+        	// dor: take successor instead of predecessor using new method minimumNode
+        	Node<K,V> pred = minimumNode(n.right);
             n.key   = pred.key;
             n.value = pred.value;
             n = pred;
@@ -281,6 +283,13 @@ public class RedBTree<K extends Comparable<? super K>,V>
         assert n != null;
         while (n.right != null) {
             n = n.right;
+        }
+        return n;
+    }
+    private static <K extends Comparable<? super K>,V> Node<K,V> minimumNode(Node<K,V> n) {
+        assert n != null;
+        while (n.left != null) {
+            n = n.left;
         }
         return n;
     }
