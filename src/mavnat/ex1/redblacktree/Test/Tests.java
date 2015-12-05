@@ -18,7 +18,7 @@ import mavnat.ex1.redblacktree.Test.Utils.*;
 
 /****
  * !!!! README !!!!
- * In order to use this test file - You must 
+ * In order to use this test file - You must complete 3 steps: 
  * 
  * A) implement function in both RBTree and RBNode as follow:
  * 	
@@ -33,12 +33,12 @@ import mavnat.ex1.redblacktree.Test.Utils.*;
  *			4) public RBTree.RBNode getParent() //Not exist in the given skeleton
  *
  * B) Add to the project the JUnit library - it is a built in library for automatic testing:
- * 					Click on Project -> Properties, select Java Build Path, Libraries -> Add Library, 
- * 																				then choose JUnit -> next + finish
+ * 					Click on "Project" -> "Properties", select "Java Build Path", "Libraries" -> "Add Library", 
+ * 																				then choose "JUnit" -> next + finish
  * 
- * C) Your RBTree should be inside mavant package, ( == mavnat folder)
+ * C) 1) Your RBTree should be inside mavant package, ( == mavnat folder)
  * 								or you may change all the "package mavnat." declerations to your package name 
- * 	  and Test Folder should be next to mavant folder;
+ * 	  2) Test Folder should be next to mavant folder;
  * 
  * 
  * Enjoy and Good Luck!
