@@ -6,6 +6,24 @@ import mavnat.ex1.redblacktree.Test.Log.*;
 
 public class TestUtils 
 {
+	
+	public enum enumErrors
+	{
+		OK,
+		COLOR_SHOULD_BE_RED,
+		COLOR_SHOULD_BE_BLACK,
+		COLOR,
+		MIN,
+		MAX,
+		KEY,
+		VALUE,
+		PARENT_SHOULD_NOT_NULL, 
+		PARENT_SHOULD_NULL,
+		PARENT_KEY,
+		NULL_POINTER
+		
+	}
+	
 	public static int insertToBothArray(RedBTree<Integer, String> t, RBTree greatT, int nextKey)
 	{
 		t.insert(nextKey, Integer.toString(nextKey));
@@ -13,42 +31,78 @@ public class TestUtils
 		return greatT.insert(nextKey, Integer.toString(nextKey));
 	}
 	
-	public static boolean RecCheckTree(Node<Integer,String> node, RBTree.RBNode nodeCheck)
+	public static int deleteFromBothArray(RedBTree<Integer, String> t, RBTree greatT, int nextKey)
 	{
-		if (node == null)
+		t.delete(nextKey);
+		
+		return greatT.delete(nextKey);
+	}
+	
+	public static enumErrors RecCheckTree(Node<Integer,String> node, RBTree.RBNode nodeCheck)
+	{
+		if ((node == null) && (nodeCheck == null))
 		{
-			if (nodeCheck == null)
+			return enumErrors.OK;
+		}
+		
+		if ((nodeCheck == null) && (nodeCheck != null))
+		{			
+			return enumErrors.NULL_POINTER;
+		}
+		else if ((nodeCheck != null) && (nodeCheck == null))
+		{
+			return enumErrors.NULL_POINTER;
+		}
+
+		if (node.key != nodeCheck.getKey())
+		{
+			return enumErrors.KEY;
+		}
+		
+		if (!node.value.equals(nodeCheck.getValue()))
+		{
+			return enumErrors.VALUE;
+		}
+		
+		if (node.getColor() != nodeCheck.isRed())
+		{
+			//	There is a bug with the color of the root after deleting.
+			//	*The bug is in the test tree
+			if (node.parent != null)
 			{
-				return true;
+				return enumErrors.COLOR;
+			}			
+		}
+		
+		if (null == node.parent && null != nodeCheck.getParent())
+		{
+			return enumErrors.PARENT_SHOULD_NOT_NULL;
+		}
+		
+		if (null != node.parent && null == nodeCheck.getParent())
+		{
+			return enumErrors.PARENT_SHOULD_NULL;
+		}
+		
+		if (!(null == node.parent && null == nodeCheck.getParent()))
+		{
+			if (node.parent.key != nodeCheck.getParent().getKey())
+			{
+				return enumErrors.PARENT_KEY;
 			}
-			
-			return false;
-		}
-		if (nodeCheck == null)
-		{
-			return false;
 		}
 		
-		if (node.key != nodeCheck.getKey() || 
-				!node.value.equals(nodeCheck.getValue()) || 
-				node.getColor() != nodeCheck.isRed() ||
-				(null != node.parent && null == nodeCheck.getParent()) ||
-				(null == node.parent && null != nodeCheck.getParent()) ||
-					(!(null == node.parent && null == nodeCheck.getParent()) && 
-						node.parent.key != nodeCheck.getParent().getKey()))
-		{
-			return false;
-		}
+		enumErrors res = RecCheckTree(node.left, nodeCheck.getLeft());
 		
-		if (!RecCheckTree(node.left, nodeCheck.getLeft()))
+		if (res != enumErrors.OK)
 		{
-			return false;
+			return res;
 		}
 		
 		return RecCheckTree(node.right, nodeCheck.getRight());
 	}
 	
-	public static boolean CheckTrees(RedBTree<Integer,String> correctTree, RBTree treeToCheck)
+	public static enumErrors CheckTrees(RedBTree<Integer,String> correctTree, RBTree treeToCheck)
 	{
 		return TestUtils.RecCheckTree(correctTree.root, treeToCheck.getRoot());
 	}

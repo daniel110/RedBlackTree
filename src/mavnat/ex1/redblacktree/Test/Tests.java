@@ -305,14 +305,21 @@ public class Tests
 		
 		if (!greatT.empty())
 		{
-			fail("Expected empty tree got not empty");
+			fail("Expected empty. tree not empty");
 		}
 		   
 		greatT.insert(1, "1");
 		
 		if (greatT.empty())
 		{
-			fail("Expected not empty tree got empty");
+			fail("Expected not empty. tree is empty");
+		}
+		
+		greatT.delete(1);
+		
+		if (!greatT.empty())
+		{
+			fail("Expected empty after delete. tree not empty");
 		}
 		
 		//TODO: add a delete and check again if empty
@@ -364,19 +371,19 @@ public class Tests
 		RBTree greatT = new RBTree();
 		
 		TestUtils.insertToBothArray(t, greatT, 5);
-		if (!TestUtils.CheckTrees(t, greatT))
+		if (TestUtils.CheckTrees(t, greatT) != TestUtils.enumErrors.OK)
 		{
 			fail("insert 5");
 		}
 		
 		TestUtils.insertToBothArray(t, greatT, 4);
-		if (!TestUtils.CheckTrees(t, greatT))
+		if (TestUtils.CheckTrees(t, greatT) != TestUtils.enumErrors.OK)
 		{
 			fail("insert 4");
 		}
 		
 		TestUtils.insertToBothArray(t, greatT, 2);
-		if (!TestUtils.CheckTrees(t, greatT))
+		if (TestUtils.CheckTrees(t, greatT) != TestUtils.enumErrors.OK)
 		{
 			fail("insert 2");
 		}
@@ -398,7 +405,7 @@ public class Tests
 			int element = badList[i];
 			
 			TestUtils.insertToBothArray(t, greatT, element);
-			if (!TestUtils.CheckTrees(t, greatT))
+			if (TestUtils.CheckTrees(t, greatT) != TestUtils.enumErrors.OK)
 			{
 				fail("Blat!!");
 			}
@@ -407,9 +414,49 @@ public class Tests
 	
 	
 	@Test
+	public void test_DELETE_Simple() throws IOException
+	{
+		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
+		RBTree greatT = new RBTree();
+		TestUtils.enumErrors res;
+
+			
+		TestUtils.insertToBothArray(t, greatT, 7);
+		TestUtils.insertToBothArray(t, greatT, 10);
+		TestUtils.insertToBothArray(t, greatT, 3);
+		
+		//t.print();
+		TestUtils.deleteFromBothArray(t, greatT, 7);
+		//t.print();
+		res = TestUtils.CheckTrees(t, greatT);
+		if (res != TestUtils.enumErrors.OK)
+		{
+			fail(res.toString());
+		}
+		
+		TestUtils.deleteFromBothArray(t, greatT, 3);
+		res = TestUtils.CheckTrees(t, greatT);
+		if (res != TestUtils.enumErrors.OK)
+		{
+			fail(res.toString());
+		}
+		
+		TestUtils.deleteFromBothArray(t, greatT, 10);
+		res = TestUtils.CheckTrees(t, greatT);
+		if (res != TestUtils.enumErrors.OK)
+		{
+			fail(res.toString());
+		}
+
+	}
+	
+	
+	@Test
 	@Repeat(times=10)
 	public void test_INSERT_fuzzer() throws IOException 
 	{
+		fail("Test disabled");
+		
 		java.util.Random gen = new java.util.Random();
 		
 		final int MAX_INSERTION = 5000;
@@ -432,7 +479,7 @@ public class Tests
 				continue;
 			}
 		
-			if (!TestUtils.CheckTrees(t, greatT))
+			if (TestUtils.CheckTrees(t, greatT) != TestUtils.enumErrors.OK)
 			{
 				Logger logFile = Tests.getUniqeLogger("test_INSERT_fuzzer");
 				logFile.write(Arrays.toString(Arrays.copyOf(insertionList, i+1)));
@@ -445,7 +492,7 @@ public class Tests
 	////////////////// End Of Insertion Tests /////////////////////////////////////////////////
 
 	
-	//@Test
+	@Test
 	//@Repeat(times=10)
 	public void test_DELETE_fuzzer() throws IOException 
 	{
@@ -453,7 +500,7 @@ public class Tests
 		
 		Logger logFile = Tests.getUniqeLogger("test_DELETE_fuzzer", true);
 		
-		final int MAX_INSERTION = 5000;
+		final int MAX_INSERTION = 10;
 		
 		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
 		RBTree greatT = new RBTree();
@@ -463,7 +510,7 @@ public class Tests
 		
 		for (int i=0; i<MAX_INSERTION; i++)
 		{
-			int nextKey = gen.nextInt(999999999);
+			int nextKey = gen.nextInt(30);
 			insertionArr[i] = nextKey;
 			
 			if (-1 == TestUtils.insertToBothArray(t, greatT, nextKey))
@@ -476,7 +523,7 @@ public class Tests
 		//log insertion list
 		logFile.write(Arrays.toString(Arrays.copyOf(insertionArr, MAX_INSERTION)));
 		
-		if (!TestUtils.CheckTrees(t, greatT))
+		if (TestUtils.CheckTrees(t, greatT) != TestUtils.enumErrors.OK)
 		{
 			fail("Non match tree: insertion keys %n " + insertionArr.toString());
 		}
@@ -486,6 +533,7 @@ public class Tests
 		Collections.shuffle(insertionList);
 		Integer[] deletionArr = insertionList.toArray(new Integer[insertionArr.length]);
 		
+		t.print();
 
 		for (int i=0; i<MAX_INSERTION; i++)
 		{
@@ -496,11 +544,14 @@ public class Tests
 			
 			t.delete(deleteKey);
 			int colorCount = greatT.delete(deleteKey);
-			
-			if (!TestUtils.CheckTrees(t, greatT))
+			TestUtils.enumErrors res = TestUtils.CheckTrees(t, greatT);
+			if (res != TestUtils.enumErrors.OK)
 			{
+				t.print();
+				greatT.print();
 				logFile.write(Arrays.toString(Arrays.copyOf(deletionArr, i+1)));
 				logFile.write("Failed on Key " + deleteKey);
+				logFile.write("Failed error " + res.toString());
 				logFile.close();
 				
 				fail("test_DELETE_fuzzer, see log file");
