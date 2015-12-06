@@ -11,7 +11,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import mavnat.ex1.redblacktree.*;
-
+import mavnat.ex1.redblacktree.RBTree.RBNode;
 import mavnat.ex1.redblacktree.Test.Log.*;
 import mavnat.ex1.redblacktree.Test.Utils.*;
 
@@ -23,7 +23,8 @@ import mavnat.ex1.redblacktree.Test.Utils.*;
  * A) implement function in both RBTree and RBNode as follow:
  * 	
  * 		RBtree
- * 			1) public RBTree.RBNode getRoot()  	
+ * 			1) public default constructor RBTree()
+ * 			1) public RBTree.RBNode getRoot()
  * 			2) public int getMaxKey() //Not exist in the given skeleton
  * 			3) public int getMinKey() //Not exist in the given skeleton 									 
  * 		RBNode
@@ -40,6 +41,28 @@ import mavnat.ex1.redblacktree.Test.Utils.*;
  * 								or you may change all the "package mavnat." declerations to your package name 
  * 	  2) Test Folder should be next to mavant folder;
  * 
+ * Errors logging:
+ * 			When you run this Tests.java file you can see in a window which is called "JUnit" (next to Package Explorer)
+ * 				 which tests was passed and where an error occurred. 
+ * 			
+ * 			Our logging mechanism is different from test to test.
+ * 				Some of the tests would just print the error, like :"expected: 10, Got 20"
+ * 				But Most of them also write the sequence of events which led to the error.
+ * 				Since most of the tests generate random keys - when an error occurs the sequence of 
+ * 							insertion is written to a log file - so you can recreate the tree.
+ * 				The logging file is created at the project directory - 
+ * 							and it's prefix is the Test's Name (== The test function name)
+ * 								
+ * 
+ * 
+ * Finally Before running this file:
+ * 			1) above each test we wrote a short explanation about how the tests is working.
+ * 			Use it when one of the tests fails - so you would understand exactly what the test is doing.
+ * 			
+ * 			2) In main Test Folder under JUnit_Result_Example folder - We added a picture, which show a 
+ * 				typical result for running the tests - JUnit library has it's own Result windows, so if 
+ * 				you are not familiar with it - take a look at Test/JUnit_Result_Example/JUnit.jpg
+ * 			
  * 
  * Enjoy and Good Luck!
  *
@@ -65,39 +88,11 @@ import mavnat.ex1.redblacktree.Test.Utils.*;
  */
 
 public class Tests
-{
-	/** 
-	 * Enable a Test to repeat X times using: @Repeat(times=X) tag above the test
-	 *  
-	 *  Example:
-	 *  @Test
-	 *  @Repeat(times=10) // repeat 10 times
-	 *  public void My_Super_Smart_Test()
-	 *	{
-	 *		 ...
-	 *	}
-	 */
-	@Rule
-	public RepeatRule repeatRule = new RepeatRule();
-	
-	private static int Counter = 0;
-	private static String getNextCounterVal()
-	{
-		return Integer.toString(Tests.Counter++);
-	}
-	private static Logger getUniqeLogger(String testName, boolean addLogFileHeader) throws IOException
-	{
-		Logger logFile = new Logger(testName + Tests.getNextCounterVal() + ".log" , ",", addLogFileHeader);
-		
-		return logFile;
-	}
-	private static Logger getUniqeLogger(String testName) throws IOException
-	{
-		return Tests.getUniqeLogger(testName, false);
-	}
-	
-	
+{	
 	/////////////////////////// Min Max Tests /////////////////////////////////////
+	
+	
+	//*** Test the min and max RBTree function when the tree has only root ***//
 	@Test
 	public void test_min_max_only_root()
 	{
@@ -118,26 +113,31 @@ public class Tests
 	
 	}
 	
+	
+	
+	
+	//*** Test RBTree.min(), runs 500 times:
+	//					Each time we insert 100 keys to the tree, and then check the min function  ***//
 	@Test
 	@Repeat(times=500)
 	public void test_min_Check() throws IOException 
 	{
 		java.util.Random gen = new java.util.Random();
 		
-		final int MAX_INSERTION = 100;
+		final int INSERTION_COUNT = 100;
 		
 		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
 		RBTree greatT = new RBTree();
 		
 		   
-		Integer[] insertionArr = new Integer[MAX_INSERTION];
+		Integer[] insertionArr = new Integer[INSERTION_COUNT];
 		
-		for (int i=0; i<MAX_INSERTION; i++)
+		for (int i=0; i<INSERTION_COUNT; i++)
 		{
 			int nextKey = gen.nextInt(999999999);
 			insertionArr[i] = nextKey;
 			
-			if (-1 == TestUtils.insertToBothArray(t, greatT, nextKey))
+			if (-1 == TestUtils.insertToBothTrees(t, greatT, nextKey))
 			{
 				i--;
 				continue;
@@ -152,7 +152,7 @@ public class Tests
 		{
 			Logger logFile = Tests.getUniqeLogger("test_min_Check");
 			
-			logFile.write(Arrays.toString(Arrays.copyOf(insertionArr,MAX_INSERTION)));
+			logFile.write(Arrays.toString(Arrays.copyOf(insertionArr,INSERTION_COUNT)));
 			String messageLog = "Expexted: " + expected + ", Got: " + result;
 			logFile.write(messageLog);
 			logFile.close();
@@ -161,41 +161,45 @@ public class Tests
 		}
 	}
 	
+	
+	//*** Test RBTree.max(). runs 500 times:
+	//					Each time we insert 100 keys to the tree, and then check the max function  ***//
 	@Test
 	@Repeat(times=500)
 	public void test_max_Check() throws IOException 
 	{
 		java.util.Random gen = new java.util.Random();
 		
-		final int MAX_INSERTION = 100;
+		final int INSERTION_COUNT = 100;
 		
 		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
 		RBTree greatT = new RBTree();
 		
 		   
-		Integer[] insertionArr = new Integer[MAX_INSERTION];
+		Integer[] insertionArr = new Integer[INSERTION_COUNT];
 		
-		for (int i=0; i<MAX_INSERTION; i++)
+		for (int i=0; i<INSERTION_COUNT; i++)
 		{
 			int nextKey = gen.nextInt(999999999);
 			insertionArr[i] = nextKey;
 			
-			if (-1 == TestUtils.insertToBothArray(t, greatT, nextKey))
+			if (-1 == TestUtils.insertToBothTrees(t, greatT, nextKey))
 			{
 				i--;
 				continue;
 			}				
 		}
 		
+		// sort the insertion keys
 		Arrays.sort(insertionArr);
 		
-		String expected = Integer.toString(insertionArr[MAX_INSERTION-1]);
+		String expected = Integer.toString(insertionArr[INSERTION_COUNT-1]);
 		String result = greatT.max();
 		if (!expected.equals(result))
 		{
 			Logger logFile = Tests.getUniqeLogger("test_max_Check");
 			
-			logFile.write(Arrays.toString(Arrays.copyOf(insertionArr,MAX_INSERTION)));
+			logFile.write(Arrays.toString(Arrays.copyOf(insertionArr,INSERTION_COUNT)));
 			String messageLog = "Expexted: " + expected + ", Got: " + result;
 			logFile.write(messageLog);
 			logFile.close();
@@ -208,32 +212,37 @@ public class Tests
 	
 	
 	////////////////////////// Array Tests //////////////////////////////////////
+	
+	
+	//*** Test RBTree.keysToArray(). runs 100 times:
+	//					Each time we insert 50 keys to the tree, and then check keysToArray function ***//
 	@Test
 	@Repeat(times=100)
 	public void test_keysToArray() throws IOException 
 	{
 		java.util.Random gen = new java.util.Random();
 		
-		final int MAX_INSERTION = 50;
+		final int INSERTION_COUNT = 50;
 		
 		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
 		RBTree greatT = new RBTree();
 		
 		   
-		int[] insertionArr = new int[MAX_INSERTION];
+		int[] insertionArr = new int[INSERTION_COUNT];
 		
-		for (int i=0; i<MAX_INSERTION; i++)
+		for (int i=0; i<INSERTION_COUNT; i++)
 		{
 			int nextKey = gen.nextInt(999999999);
 			insertionArr[i] = nextKey;
 			
-			if (-1 == TestUtils.insertToBothArray(t, greatT, nextKey))
+			if (-1 == TestUtils.insertToBothTrees(t, greatT, nextKey))
 			{
 				i--;
 				continue;
 			}				
 		}
 		
+		// sort the insertion keys
 		Arrays.sort(insertionArr);
 		
 		int[] expected = insertionArr;
@@ -242,7 +251,7 @@ public class Tests
 		{
 			Logger logFile = Tests.getUniqeLogger("test_keysToArray");
 			
-			logFile.write(Arrays.toString(Arrays.copyOf(insertionArr,MAX_INSERTION)));
+			logFile.write(Arrays.toString(Arrays.copyOf(insertionArr,INSERTION_COUNT)));
 			String messageLog = "Expexted: " + expected + ", Got: " + result;
 			logFile.write(messageLog);
 			logFile.close();
@@ -252,32 +261,35 @@ public class Tests
 	}
 	
 	
+	//*** Test RBTree.valusToArray(). runs 100 times:
+	//					Each time we insert 50 keys to the tree, and then check valusToArray function ***//
 	@Test
 	@Repeat(times=100)
 	public void test_valusToArray() throws IOException 
 	{
 		java.util.Random gen = new java.util.Random();
 		
-		final int MAX_INSERTION = 50;
+		final int INSERTION_COUNT = 50;
 		
 		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
 		RBTree greatT = new RBTree();
 		
 		   
-		int[] insertionArr = new int[MAX_INSERTION];
+		int[] insertionArr = new int[INSERTION_COUNT];
 		
-		for (int i=0; i<MAX_INSERTION; i++)
+		for (int i=0; i<INSERTION_COUNT; i++)
 		{
 			int nextKey = gen.nextInt(999999999);
 			insertionArr[i] = nextKey;
 			
-			if (-1 == TestUtils.insertToBothArray(t, greatT, nextKey))
+			if (-1 == TestUtils.insertToBothTrees(t, greatT, nextKey))
 			{
 				i--;
 				continue;
 			}				
 		}
 		
+		// sort the insertion keys
 		Arrays.sort(insertionArr);
 		
 		String[] expected=Arrays.toString(insertionArr).split("[\\[\\]]")[1].split(", "); 
@@ -286,7 +298,7 @@ public class Tests
 		{
 			Logger logFile = Tests.getUniqeLogger("test_valusToArray");
 			
-			logFile.write("Expected : " + Arrays.toString(Arrays.copyOf(insertionArr,MAX_INSERTION)));
+			logFile.write("Expected : " + Arrays.toString(Arrays.copyOf(insertionArr,INSERTION_COUNT)));
 			logFile.write("Got : " + Arrays.toString(result));
 			logFile.close();
 			
@@ -297,8 +309,10 @@ public class Tests
 	
 	///////////////////////////  Size Tests /////////////////////////////////////
 	
+	
+	//*** Test RBTree.empty(). 
+	//			check the function before any insertion, after one insertion, and after delete ***//
 	@Test
-	@Repeat(times=100)
 	public void test_empty() throws IOException 
 	{
 		RBTree greatT = new RBTree();
@@ -319,31 +333,44 @@ public class Tests
 		
 		if (!greatT.empty())
 		{
-			fail("Expected empty after delete. tree not empty");
+			fail("Expected empty tree after delete. tree is not empty");
 		}
 		
 	}
 	
+	
+	//*** Test RBTree.size(), runs 100 time.
+	// 				  Each time we: 1) get random number - which represent the number of insertion (INSERTION_COUNT)
+	//								2) insert a random INSERTION_COUNT keys
+	//								3) check tree size (should be INSERTION_COUNT)
+	//								4) delete the last inserted key
+	//								5) check tree size again (should be INSERTION_COUNT-1)	***//
 	@Test
 	@Repeat(times=100)
 	public void test_size() throws IOException 
 	{
+		
 		java.util.Random gen = new java.util.Random();
 		
-		final int MAX_INSERTION = gen.nextInt(300);
+		final int INSERTION_COUNT = gen.nextInt(300) + 1; // +1 to avoid zero
 		
 		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
 		RBTree greatT = new RBTree();
 		
-		   
-		int[] insertionArr = new int[MAX_INSERTION];
+		if ( 0 != greatT.size())
+		{
+			fail("Before any insretion the size should be zero, Got: " + greatT.size());
+		}
 		
-		for (int i=0; i<MAX_INSERTION; i++)
+		   
+		int[] insertionArr = new int[INSERTION_COUNT];
+		
+		for (int i=0; i<INSERTION_COUNT; i++)
 		{
 			int nextKey = gen.nextInt(999999999);
 			insertionArr[i] = nextKey;
 			
-			if (-1 == TestUtils.insertToBothArray(t, greatT, nextKey))
+			if (-1 == TestUtils.insertToBothTrees(t, greatT, nextKey))
 			{
 				i--;
 				continue;
@@ -351,9 +378,18 @@ public class Tests
 		}
 		
 		int size = greatT.size();
-		if (MAX_INSERTION != size)
+		if (INSERTION_COUNT != size)
 		{
-			fail("Expcted size: " + MAX_INSERTION + ", Got: " + size);
+			fail("Expcted size: " + INSERTION_COUNT + ", Got: " + size);
+		}
+
+		
+		greatT.delete(insertionArr[INSERTION_COUNT-1]);
+		
+		size = greatT.size();
+		if (INSERTION_COUNT-1 != size)
+		{
+			fail("Expcted size: " + (INSERTION_COUNT-1) + ", Got: " + size);
 		}
 	}
 	
@@ -363,13 +399,19 @@ public class Tests
 	
 	///////////////////////  Search + getRoot Tests /////////////////////////
 	
+	//*** Test RBTree.search(), runs 100 time.
+	// 				  Each time we: 1) get random key number to check the the search function return null 
+	//																	(the tree is empty)
+	//								2) insert a random 50 keys
+	//								3) check that 20 of those keys(random choosing) are indeed in the tree
+	//								5) check again that a key which is not in the tree	***//
 	@Test
 	@Repeat(times=100)
 	public void test_search()
 	{
 		java.util.Random gen = new java.util.Random();
 		
-		final int MAX_INSERTION = 50;
+		final int INSERTION_COUNT = 50;
 		
 		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
 		RBTree greatT = new RBTree();
@@ -381,14 +423,14 @@ public class Tests
 			fail("looked for " + keyNotInTree + " but it was found, even though the tree is empty");
 		}	
 		   
-		Integer[] insertionArr = new Integer[MAX_INSERTION];
+		Integer[] insertionArr = new Integer[INSERTION_COUNT];
 		
-		for (int i=0; i<MAX_INSERTION; i++)
+		for (int i=0; i<INSERTION_COUNT; i++)
 		{
 			int nextKey = gen.nextInt(5000);
 			insertionArr[i] = nextKey;
 			
-			if (-1 == TestUtils.insertToBothArray(t, greatT, nextKey))
+			if (-1 == TestUtils.insertToBothTrees(t, greatT, nextKey))
 			{
 				i--;
 				continue;
@@ -420,32 +462,36 @@ public class Tests
 		
 	}
 	
+	
+	
+	//*** Test RBTree.getRoot(), runs 100 time.
+	// 				  Each time we  1) check that when the tree is empty getRoot() == null
+	//								2) insert 50 random keys and then check getRoot()  ***// 
 	@Test
 	@Repeat(times=100)
 	public void test_getRoot()
 	{
 		java.util.Random gen = new java.util.Random();
 		
-		final int MAX_INSERTION = 50;
+		final int INSERTION_COUNT = 50;
 		
 		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
 		RBTree greatT = new RBTree();
 		
-		int keyNotInTree = gen.nextInt(5000);
-		String result = greatT.search(keyNotInTree);
+		RBNode result = greatT.getRoot();
 		if (null != result)
 		{
-			fail("looked for " + keyNotInTree + " but it was found, even though the tree is empty");
+			fail("When the tree is empty getRoot should return null, instead Got key of: " + result.getKey());
 		}	
 		   
-		Integer[] insertionArr = new Integer[MAX_INSERTION];
+		Integer[] insertionArr = new Integer[INSERTION_COUNT];
 		
-		for (int i=0; i<MAX_INSERTION; i++)
+		for (int i=0; i<INSERTION_COUNT; i++)
 		{
 			int nextKey = gen.nextInt(5000);
 			insertionArr[i] = nextKey;
 			
-			if (-1 == TestUtils.insertToBothArray(t, greatT, nextKey))
+			if (-1 == TestUtils.insertToBothTrees(t, greatT, nextKey))
 			{
 				i--;
 				continue;
@@ -464,25 +510,27 @@ public class Tests
 	
 	
 	////////////////////////// Insertion Tests //////////////////////////////////
+	
+	//*** Test RBTree.insert(k,v). simple tests - just insert 3 keys  ***// 
 	@Test
 	public void test_INSERT_Down_Order()
 	{
 		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
 		RBTree greatT = new RBTree();
 		
-		TestUtils.insertToBothArray(t, greatT, 5);
+		TestUtils.insertToBothTrees(t, greatT, 5);
 		if (TestUtils.CheckTrees(t, greatT) != TestUtils.enumErrors.OK)
 		{
 			fail("insert 5");
 		}
 		
-		TestUtils.insertToBothArray(t, greatT, 4);
+		TestUtils.insertToBothTrees(t, greatT, 4);
 		if (TestUtils.CheckTrees(t, greatT) != TestUtils.enumErrors.OK)
 		{
 			fail("insert 4");
 		}
 		
-		TestUtils.insertToBothArray(t, greatT, 2);
+		TestUtils.insertToBothTrees(t, greatT, 2);
 		if (TestUtils.CheckTrees(t, greatT) != TestUtils.enumErrors.OK)
 		{
 			fail("insert 2");
@@ -491,20 +539,34 @@ public class Tests
 		
 	}
 	
+	
+	//*** Test RBTree.insert(k,v). Very useful test case when an error occur in the test_INSERT_fuzzer Test.
+	//	   Here you can edit the badList array to your own "bad list" - and the recreate the problematic tree 
+	//		
+	//		In general, the test insert the given keys one by one,
+	//					and check after each insertion that the tree is correct. ***//
 	@Test
 	public void test_INSERT_Arr() throws IOException
 	{
+		// create te tree which is used for testing (not your tree)
 		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
+
+		// create your tree
 		RBTree greatT = new RBTree();
 		
-		int [] badList = new int[] {99660, 32514, 85126, 182106, 170016, 58525, 81075, 2250, 91818, 147032, 76321, 173692, 128576, 115616, 176629, 190345, 135031, 186505, 121263, 198606, 66602, 165096, 182083, 34256, 31322, 86286, 38536, 182473, 165808, 166433, 89289, 196243, 11229, 104600, 122, 51952, 34255};
+		// this badList will be inserted one by one to the tree - in the for loop
+		int [] badList = new int[] {99660, 32514, 85126, 182106};
 		
 
 		for (int i = 0; i< badList.length; i++)
 		{
 			int element = badList[i];
 			
-			TestUtils.insertToBothArray(t, greatT, element);
+			// this function insert the key to both your tree - and the testHelper tree
+			// your insert function is called like this: greatT.insert(element, Integer.toString(element))
+			int colorSwitchCounter = TestUtils.insertToBothTrees(t, greatT, element);
+			
+			// check that your tree and the testHelper tree are the same
 			if (TestUtils.CheckTrees(t, greatT) != TestUtils.enumErrors.OK)
 			{
 				fail("Blat!!");
@@ -513,27 +575,36 @@ public class Tests
 	}
 	
 	
-	
+	//*** Test RBTree.insert(k,v).  runs 10 times. 
+	//                        Each time insert 5000 random keys, and check each insertion the tree 
+	//     Error: in case an error was occurred  a log file would be create in your project directory.
+	// 				The log file name would start with "test_INSERT_fuzzer" and inside would be written
+	//				the insertion array which lead to the problem.
+	// 
+	//				In order to recreate the tree - go to test_INSERT_Arr Test, and 
+	// 					replace badList array to your own array. 
+	//				Be aware that the error must have been in the last insertion 
+	//					(since we check the tree after each insertion)                    ***//
 	@Test
 	@Repeat(times=10)
 	public void test_INSERT_fuzzer() throws IOException 
 	{
 		java.util.Random gen = new java.util.Random();
 		
-		final int MAX_INSERTION = 5000;
+		final int INSERTION_COUNT = 5000;
 		
 		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
 		RBTree greatT = new RBTree();
 			
        
-		int[] insertionList = new int[MAX_INSERTION];
+		int[] insertionList = new int[INSERTION_COUNT];
 		
-		for (int i=0; i<MAX_INSERTION; i++)
+		for (int i=0; i<INSERTION_COUNT; i++)
 		{
-			int nextKey = gen.nextInt(MAX_INSERTION * 100);
+			int nextKey = gen.nextInt(INSERTION_COUNT * 100);
 			insertionList[i] = nextKey;
 			
-			int colorCount = TestUtils.insertToBothArray(t, greatT, nextKey);
+			int colorCount = TestUtils.insertToBothTrees(t, greatT, nextKey);
 			if (-1 == colorCount)
 			{
 				i--;
@@ -554,6 +625,8 @@ public class Tests
 
 	
 	////////////////////////// Deletion Tests //////////////////////////////////////
+	
+	//*** Test RBTree.delete(k). insert 7,10,3 and then delete 7,3,10    ***//
 	@Test
 	public void test_DELETE_Simple() throws IOException
 	{
@@ -562,9 +635,9 @@ public class Tests
 		TestUtils.enumErrors res;
 
 			
-		TestUtils.insertToBothArray(t, greatT, 7);
-		TestUtils.insertToBothArray(t, greatT, 10);
-		TestUtils.insertToBothArray(t, greatT, 3);
+		TestUtils.insertToBothTrees(t, greatT, 7);
+		TestUtils.insertToBothTrees(t, greatT, 10);
+		TestUtils.insertToBothTrees(t, greatT, 3);
 		
 		TestUtils.deleteFromBothArray(t, greatT, 7);
 		
@@ -591,6 +664,15 @@ public class Tests
 	}
 
 	
+	//*** Test RBTree.delete(k). runs 10 tims:
+	//			Each time: 1) insert 5000 random keys
+	//						2) delete randomly all the inserted keys
+	//						each delete we write to test_DELETE_fuzzer log file - basic info about the delete key
+	//							(see Tests.Log package - LogInfo.java - for the full information which is saved)
+	//							you can open the log in excel, it is saved in csv format with "," delimiter
+	//						and also each delete we check the tree correctness: 
+	//								(using our own function - not like the insertion which we compared to other tree)
+	//							by checking the black height of the tree + on each node, the parent pointer ***//
 	@Test
 	@Repeat(times=10)
 	public void test_DELETE_fuzzer() throws IOException 
@@ -599,20 +681,20 @@ public class Tests
 		
 		Logger logFile = Tests.getUniqeLogger("test_DELETE_fuzzer", true);
 		
-		final int MAX_INSERTION = 5000;
+		final int INSERTION_COUNT = 5000;
 		
 		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
 		RBTree greatT = new RBTree();
 		
 		   
-		Integer[] insertionArr = new Integer[MAX_INSERTION];
+		Integer[] insertionArr = new Integer[INSERTION_COUNT];
 		
-		for (int i=0; i<MAX_INSERTION; i++)
+		for (int i=0; i<INSERTION_COUNT; i++)
 		{
 			int nextKey = gen.nextInt(500000);
 			insertionArr[i] = nextKey;
 			
-			if (-1 == TestUtils.insertToBothArray(t, greatT, nextKey))
+			if (-1 == TestUtils.insertToBothTrees(t, greatT, nextKey))
 			{
 				i--;
 				continue;
@@ -620,7 +702,7 @@ public class Tests
 			
 		}
 		//log insertion list
-		logFile.write(Arrays.toString(Arrays.copyOf(insertionArr, MAX_INSERTION)));
+		logFile.write(Arrays.toString(Arrays.copyOf(insertionArr, INSERTION_COUNT)));
 		
 		if (TestUtils.CheckTrees(t, greatT) != TestUtils.enumErrors.OK)
 		{
@@ -634,7 +716,7 @@ public class Tests
 		
 		TestUtils aaa= new TestUtils();
 
-		for (int i=0; i<MAX_INSERTION; i++)
+		for (int i=0; i<INSERTION_COUNT; i++)
 		{
 			int deleteKey = deletionArr[i];
 			
@@ -661,5 +743,41 @@ public class Tests
 	}
 
 	//////////////////////////End of Deletion Tests //////////////////////////////////
+	
+	
+	
+	
+	//////// !!!!!!  End of Tests section !!!!!! //////////
+	
+	
+	/** 
+	 * Enable a Test to repeat X times using: @Repeat(times=X) tag above the test
+	 *  
+	 *  Example:
+	 *  @Test
+	 *  @Repeat(times=10) // repeat 10 times
+	 *  public void My_Super_Smart_Test()
+	 *	{
+	 *		 ...
+	 *	}
+	 */
+	@Rule
+	public RepeatRule repeatRule = new RepeatRule();
+	
+	private static int Counter = 0;
+	private static String getNextCounterVal()
+	{
+		return Integer.toString(Tests.Counter++);
+	}
+	private static Logger getUniqeLogger(String testName, boolean addLogFileHeader) throws IOException
+	{
+		Logger logFile = new Logger(testName + Tests.getNextCounterVal() + ".log" , ",", addLogFileHeader);
+		
+		return logFile;
+	}
+	private static Logger getUniqeLogger(String testName) throws IOException
+	{
+		return Tests.getUniqeLogger(testName, false);
+	}
 	
 }

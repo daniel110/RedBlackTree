@@ -1,7 +1,6 @@
 package mavnat.ex1.redblacktree.Test.Utils;
 
 import mavnat.ex1.redblacktree.*;
-import mavnat.ex1.redblacktree.RBTree.RBNode;
 import mavnat.ex1.redblacktree.Test.Log.*;
 
 
@@ -44,7 +43,7 @@ public class TestUtils
 
 	private static final int INDENT_STEP = 4;
 	
-	public static int insertToBothArray(RedBTree<Integer, String> t, RBTree greatT, int nextKey)
+	public static int insertToBothTrees(RedBTree<Integer, String> t, RBTree greatT, int nextKey)
 	{
 		t.insert(nextKey, Integer.toString(nextKey));
 		
@@ -63,11 +62,11 @@ public class TestUtils
         printHelper(n.getRoot(), 0);
     }
 	
-    public static void printTree(RBNode n) {
+    public static void printTree(RBTree.RBNode n) {
         printHelper(n, 0);
     }
 
-    private static void printHelper(RBNode n, int indent) {
+    private static void printHelper(RBTree.RBNode n, int indent) {
         if (n == null) {
             System.out.print("<empty tree>");
             return;
