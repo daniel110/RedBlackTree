@@ -1076,6 +1076,24 @@ public class RBTree
 	{
 		return minNode.getKey();
 	}
+	
+	public RBNode getNodeByKey(int key)
+	{
+		SearchKeyInSubTreeResult res = this.searchKeyInSubTree(this.getRoot(), key);
+		if (res == null)
+		{
+			//	Root is null
+			return null;
+		}
+		RBNode node = res.Result;
+		if (node == null)
+		{
+			//	Node not found
+			return null;
+		}
+		
+		return node;
+	}
 	//////////////////////////////////////
 
 }

@@ -85,6 +85,8 @@ import mavnat.ex1.redblacktree.Test.Utils.*;
  *			}
  *		
  *
+ *
+ * @authors: Daniel Feldman, Dor Mendil
  */
 
 public class Tests
@@ -126,10 +128,7 @@ public class Tests
 		
 		final int INSERTION_COUNT = 100;
 		
-		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
-		RBTree greatT = new RBTree();
-		
-		   
+		RBTree greatT = new RBTree();	   
 		Integer[] insertionArr = new Integer[INSERTION_COUNT];
 		
 		for (int i=0; i<INSERTION_COUNT; i++)
@@ -137,7 +136,7 @@ public class Tests
 			int nextKey = gen.nextInt(999999999);
 			insertionArr[i] = nextKey;
 			
-			if (-1 == TestUtils.insertToBothTrees(t, greatT, nextKey))
+			if (-1 == greatT.insert(nextKey, Integer.toString(nextKey)))
 			{
 				i--;
 				continue;
@@ -224,10 +223,7 @@ public class Tests
 		
 		final int INSERTION_COUNT = 50;
 		
-		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
-		RBTree greatT = new RBTree();
-		
-		   
+		RBTree greatT = new RBTree();   
 		int[] insertionArr = new int[INSERTION_COUNT];
 		
 		for (int i=0; i<INSERTION_COUNT; i++)
@@ -235,7 +231,7 @@ public class Tests
 			int nextKey = gen.nextInt(999999999);
 			insertionArr[i] = nextKey;
 			
-			if (-1 == TestUtils.insertToBothTrees(t, greatT, nextKey))
+			if (-1 == greatT.insert(nextKey, Integer.toString(nextKey)))
 			{
 				i--;
 				continue;
@@ -271,7 +267,6 @@ public class Tests
 		
 		final int INSERTION_COUNT = 50;
 		
-		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
 		RBTree greatT = new RBTree();
 		
 		   
@@ -282,7 +277,7 @@ public class Tests
 			int nextKey = gen.nextInt(999999999);
 			insertionArr[i] = nextKey;
 			
-			if (-1 == TestUtils.insertToBothTrees(t, greatT, nextKey))
+			if (-1 == greatT.insert(nextKey, Integer.toString(nextKey)))
 			{
 				i--;
 				continue;
@@ -349,13 +344,11 @@ public class Tests
 	@Repeat(times=100)
 	public void test_size() throws IOException 
 	{
-		
 		java.util.Random gen = new java.util.Random();
 		
-		final int INSERTION_COUNT = gen.nextInt(300) + 1; // +1 to avoid zero
-		
-		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
 		RBTree greatT = new RBTree();
+		
+		final int INSERTION_COUNT = gen.nextInt(300) + 1; // +1 to avoid zero	
 		
 		if ( 0 != greatT.size())
 		{
@@ -370,7 +363,7 @@ public class Tests
 			int nextKey = gen.nextInt(999999999);
 			insertionArr[i] = nextKey;
 			
-			if (-1 == TestUtils.insertToBothTrees(t, greatT, nextKey))
+			if (-1 == greatT.insert(nextKey, Integer.toString(nextKey)))
 			{
 				i--;
 				continue;
@@ -413,7 +406,6 @@ public class Tests
 		
 		final int INSERTION_COUNT = 50;
 		
-		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
 		RBTree greatT = new RBTree();
 		
 		int keyNotInTree = gen.nextInt(5000);
@@ -430,7 +422,7 @@ public class Tests
 			int nextKey = gen.nextInt(5000);
 			insertionArr[i] = nextKey;
 			
-			if (-1 == TestUtils.insertToBothTrees(t, greatT, nextKey))
+			if (-1 == greatT.insert(nextKey, Integer.toString(nextKey)))
 			{
 				i--;
 				continue;
@@ -519,21 +511,27 @@ public class Tests
 		RBTree greatT = new RBTree();
 		
 		TestUtils.insertToBothTrees(t, greatT, 5);
-		if (TestUtils.CheckTrees(t, greatT) != TestUtils.enumErrors.OK)
+		
+		TestUtils.enumErrors res = TestUtils.CheckTrees(t, greatT);
+		if (res != TestUtils.enumErrors.OK)
 		{
-			fail("insert 5");
+			fail("insert 5, error: " + res.toString());
 		}
 		
 		TestUtils.insertToBothTrees(t, greatT, 4);
-		if (TestUtils.CheckTrees(t, greatT) != TestUtils.enumErrors.OK)
+		
+		res = TestUtils.CheckTrees(t, greatT);
+		if (res != TestUtils.enumErrors.OK)
 		{
-			fail("insert 4");
+			fail("insert 4, error: " + res.toString());
 		}
 		
 		TestUtils.insertToBothTrees(t, greatT, 2);
-		if (TestUtils.CheckTrees(t, greatT) != TestUtils.enumErrors.OK)
+		
+		res = TestUtils.CheckTrees(t, greatT);
+		if (res != TestUtils.enumErrors.OK)
 		{
-			fail("insert 2");
+			fail("insert 2, error: " + res.toString());
 		}
 		
 		
@@ -572,9 +570,10 @@ public class Tests
 			TestUtils.insertToBothTrees(t, greatT, element);
 			
 			// check that your tree and the testHelper tree are the same
-			if (TestUtils.CheckTrees(t, greatT) != TestUtils.enumErrors.OK)
+			TestUtils.enumErrors res = TestUtils.CheckTrees(t, greatT);
+			if (res != TestUtils.enumErrors.OK)
 			{
-				fail("Blat!!");
+				fail("Error: " + res.toString());
 			}
 		}
 		
@@ -618,13 +617,14 @@ public class Tests
 				continue;
 			}
 		
-			if (TestUtils.CheckTrees(t, greatT) != TestUtils.enumErrors.OK)
+			TestUtils.enumErrors res = TestUtils.CheckTrees(t, greatT);
+			if (res != TestUtils.enumErrors.OK)
 			{
 				Logger logFile = Tests.getUniqeLogger("test_INSERT_fuzzer");
 				logFile.write(Arrays.toString(Arrays.copyOf(insertionList, i+1)));
 				logFile.close();
 				
-				fail("Non match tree: insertion keys - see file.log");
+				fail("Non match tree: insertion keys - see file.log. general error: " + res.toString());
 			}
 		}
 	}
@@ -651,35 +651,36 @@ public class Tests
 		res = TestUtils.CheckTrees(t, greatT);
 		if (res != TestUtils.enumErrors.OK)
 		{
-			fail(res.toString());
+			fail("Error: " + res.toString());
 		}
 		
 		TestUtils.deleteFromBothArray(t, greatT, 3);
 		res = TestUtils.CheckTrees(t, greatT);
 		if (res != TestUtils.enumErrors.OK)
 		{
-			fail(res.toString());
+			fail("Error: " + res.toString());
 		}
 		
 		TestUtils.deleteFromBothArray(t, greatT, 10);
 		res = TestUtils.CheckTrees(t, greatT);
 		if (res != TestUtils.enumErrors.OK)
 		{
-			fail(res.toString());
+			fail("Error: " + res.toString());
 		}
 
 	}
 
 	
-	//*** Test RBTree.delete(k). runs 10 tims:
+	//*** Test RBTree.delete(k). runs 10 times:
 	//			Each time: 1) insert 5000 random keys
-	//						2) delete randomly all the inserted keys
-	//						each delete we write to test_DELETE_fuzzer log file - basic info about the delete key
-	//							(see Tests.Log package - LogInfo.java - for the full information which is saved)
-	//							you can open the log in excel, it is saved in csv format with "," delimiter
-	//						and also each delete we check the tree correctness: 
+	//						2) write to test_DELETE_fuzzer log file all the insertion keys (in the insertion order)
+	//						3) delete randomly all the inserted keys
+	//							each delete we write to test_DELETE_fuzzer log file - basic info about the delete key
+	//								(see Tests.Log package - LogInfo.java - for the full information which is saved)
+	//								you can open the log in excel, it is saved in csv format with "," delimiter
+	//							and also each delete we check the tree correctness: 
 	//								(using our own function - not like the insertion which we compared to other tree)
-	//							by checking the black height of the tree + on each node, the parent pointer ***//
+	//								by checking the black height of the tree + on each node, the parent pointer ***//
 	@Test
 	@Repeat(times=10)
 	public void test_DELETE_fuzzer() throws IOException 
@@ -728,7 +729,7 @@ public class Tests
 			int deleteKey = deletionArr[i];
 			
 			// write basic info on each deleted node (color, parent color, children count, etc..)
-			logFile.write(TestUtils.getLogInfo(t.lookupNode(deleteKey), greatT));
+			logFile.write(TestUtils.getLogInfo(greatT.getNodeByKey(deleteKey), greatT));
 			greatT.delete(deleteKey);
 			
 			TestUtils.CheckHeigtResult res = aaa.CheckTreeBlackHeight(greatT.getRoot(), null);
@@ -741,7 +742,7 @@ public class Tests
 				logFile.write("Failed error " + res.state.toString());
 				logFile.close();
 				
-				fail("test_DELETE_fuzzer, see log file");
+				fail("test_DELETE_fuzzer, see log file. general error: " + res.state.toString());
 			}
 			
 		}	

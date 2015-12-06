@@ -219,39 +219,46 @@ public class TestUtils
 	}
 	
 	
-	public static LogInfo getLogInfo(Node<Integer,String> node, RBTree t)
+	private static String fromIsRedToColor(boolean isRed)
+	{
+		if (isRed)
+		{
+			return "Red";
+		}
+		
+		return "Black";
+	}
+	
+	public static LogInfo getLogInfo(RBTree.RBNode node, RBTree t)
 	{
 		LogInfo info = new LogInfo();
 		
-		info.key = node.key;
+		info.key = node.getKey();
 		
-		info.color = node.color.toString();
+		info.color = TestUtils.fromIsRedToColor(node.isRed());
 		
-		if (null == node.parent )
+		if (null == node.getParent() )
 		{
 			info.parentColor = "Root";
 		}
 		else
 		{
-			info.parentColor = node.parent.color.toString();
+			info.parentColor = TestUtils.fromIsRedToColor(node.getParent().isRed());
 		}
 		
 		int childrenCount = 0;
-		if (null != node.left)
+		if (null != node.getLeft())
 		{
 			childrenCount++;
 		}
-		if (null != node.right)
+		if (null != node.getRight())
 		{
 			childrenCount++;
 		}
 		info.childrenCount = childrenCount;
 		
-		// I think it's the black tree height
-		info.blackHeight = RedBTree.verifyProperty5Helper(node, 0, -1);
-		
-		info.isMax = (node.key == t.getMaxKey()) ? true : false;
-		info.isMin = (node.key == t.getMinKey()) ? true : false;
+		info.isMax = (node.getKey() == t.getMaxKey()) ? true : false;
+		info.isMin = (node.getKey() == t.getMinKey()) ? true : false;
 		
 		return info;
 	}

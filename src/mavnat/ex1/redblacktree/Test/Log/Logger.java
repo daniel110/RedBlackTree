@@ -9,7 +9,7 @@ import java.io.IOException;
 
 public class Logger
 {
-	private final static String[] FILE_HEADER = {"Key", "Color", "Parent Color", "Childern Count", "Black Height", "Is Max", "Is Min" };
+	private final static String[] FILE_HEADER = {"Key", "Color", "Parent Color", "Childern Count", "Is Max", "Is Min" };
 	
 	public BufferedWriter bw;
 	public String logInfoDelimiter;
@@ -53,7 +53,6 @@ public class Logger
 		builder.append(info.color + logInfoDelimiter);
 		builder.append(info.parentColor + logInfoDelimiter);
 		builder.append(Integer.toString(info.childrenCount) + logInfoDelimiter);
-		builder.append(Integer.toString(info.blackHeight) + logInfoDelimiter);
 		builder.append(Boolean.toString(info.isMax) + logInfoDelimiter);
 		builder.append(Boolean.toString(info.isMin));
 		
