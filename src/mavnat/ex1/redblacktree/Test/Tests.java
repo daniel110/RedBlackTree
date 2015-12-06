@@ -544,18 +544,23 @@ public class Tests
 	//	   Here you can edit the badList array to your own "bad list" - and the recreate the problematic tree 
 	//		
 	//		In general, the test insert the given keys one by one,
-	//					and check after each insertion that the tree is correct. ***//
+	//					and check after each insertion that the tree is correct. 
+	//					
+	//					At the end of the test their is commented line of "TestUtils.printTree(greatT);"
+	//					This line prints the tree (from left to right - the root is the leftist number) 
+	//					Red nodes or surrounded by <>.					
+	//					You can use it for debug (in this test or any other test)		***//
 	@Test
 	public void test_INSERT_Arr() throws IOException
 	{
-		// create te tree which is used for testing (not your tree)
+		// create the tree which is used for testing (not your tree)
 		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
 
 		// create your tree
 		RBTree greatT = new RBTree();
 		
 		// this badList will be inserted one by one to the tree - in the for loop
-		int [] badList = new int[] {99660, 32514, 85126, 182106};
+		int [] badList = new int[] {99660, 32514, 85126};
 		
 
 		for (int i = 0; i< badList.length; i++)
@@ -564,7 +569,7 @@ public class Tests
 			
 			// this function insert the key to both your tree - and the testHelper tree
 			// your insert function is called like this: greatT.insert(element, Integer.toString(element))
-			int colorSwitchCounter = TestUtils.insertToBothTrees(t, greatT, element);
+			TestUtils.insertToBothTrees(t, greatT, element);
 			
 			// check that your tree and the testHelper tree are the same
 			if (TestUtils.CheckTrees(t, greatT) != TestUtils.enumErrors.OK)
@@ -572,6 +577,8 @@ public class Tests
 				fail("Blat!!");
 			}
 		}
+		
+		//TestUtils.printTree(greatT);
 	}
 	
 	
