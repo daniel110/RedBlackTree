@@ -43,14 +43,14 @@ public class TestUtils
 
 	private static final int INDENT_STEP = 4;
 	
-	public static int insertToBothTrees(RedBTree<Integer, String> t, RBTree greatT, int nextKey)
+	public static int insertToBothTrees(RedBTree<Integer, String> t, RBTree_danielf1_dormendil greatT, int nextKey)
 	{
 		t.insert(nextKey, Integer.toString(nextKey));
 		
 		return greatT.insert(nextKey, Integer.toString(nextKey));
 	}
 	
-	public static int deleteFromBothArray(RedBTree<Integer, String> t, RBTree greatT, int nextKey)
+	public static int deleteFromBothArray(RedBTree<Integer, String> t, RBTree_danielf1_dormendil greatT, int nextKey)
 	{
 		t.delete(nextKey);
 		
@@ -58,15 +58,15 @@ public class TestUtils
 	}
 	
 	
-    public static void printTree(RBTree n) {
+    public static void printTree(RBTree_danielf1_dormendil n) {
         printHelper(n.getRoot(), 0);
     }
 	
-    public static void printTree(RBTree.RBNode n) {
+    public static void printTree(RBTree_danielf1_dormendil.RBNode n) {
         printHelper(n, 0);
     }
 
-    private static void printHelper(RBTree.RBNode n, int indent) {
+    private static void printHelper(RBTree_danielf1_dormendil.RBNode n, int indent) {
         if (n == null) {
             System.out.print("<empty tree>");
             return;
@@ -85,7 +85,7 @@ public class TestUtils
         }
     }
 	
-	public CheckHeigtResult CheckTreeBlackHeight(RBTree.RBNode nodeCheck, RBTree.RBNode parent)
+	public CheckHeigtResult CheckTreeBlackHeight(RBTree_danielf1_dormendil.RBNode nodeCheck, RBTree_danielf1_dormendil.RBNode parent)
 	{
 		int blackHeight = 0;
 		int Height = 0;
@@ -149,7 +149,7 @@ public class TestUtils
 		return res;	
 	}
 	
-	public static enumErrors RecCheckTree(Node<Integer,String> node, RBTree.RBNode nodeCheck)
+	public static enumErrors RecCheckTree(Node<Integer,String> node, RBTree_danielf1_dormendil.RBNode nodeCheck)
 	{
 		if ((node == null) && (nodeCheck == null))
 		{
@@ -213,7 +213,7 @@ public class TestUtils
 		return RecCheckTree(node.right, nodeCheck.getRight());
 	}
 	
-	public static enumErrors CheckTrees(RedBTree<Integer,String> correctTree, RBTree treeToCheck)
+	public static enumErrors CheckTrees(RedBTree<Integer,String> correctTree, RBTree_danielf1_dormendil treeToCheck)
 	{
 		return TestUtils.RecCheckTree(correctTree.root, treeToCheck.getRoot());
 	}
@@ -229,7 +229,7 @@ public class TestUtils
 		return "Black";
 	}
 	
-	public static LogInfo getLogInfo(RBTree.RBNode node, RBTree t)
+	public static LogInfo getLogInfo(RBTree_danielf1_dormendil.RBNode node, RBTree_danielf1_dormendil t)
 	{
 		LogInfo info = new LogInfo();
 		

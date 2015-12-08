@@ -11,7 +11,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import mavnat.ex1.redblacktree.*;
-import mavnat.ex1.redblacktree.RBTree.RBNode;
+import mavnat.ex1.redblacktree.RBTree_danielf1_dormendil.RBNode;
 import mavnat.ex1.redblacktree.Test.Log.*;
 import mavnat.ex1.redblacktree.Test.Utils.*;
 
@@ -98,7 +98,7 @@ public class Tests
 	@Test
 	public void test_min_max_only_root()
 	{
-		RBTree greatT = new RBTree();
+		RBTree_danielf1_dormendil greatT = new RBTree_danielf1_dormendil();
 		
 		int insertKey = 10;
 		greatT.insert(10, Integer.toString(insertKey));
@@ -128,7 +128,7 @@ public class Tests
 		
 		final int INSERTION_COUNT = 100;
 		
-		RBTree greatT = new RBTree();	   
+		RBTree_danielf1_dormendil greatT = new RBTree_danielf1_dormendil();	   
 		Integer[] insertionArr = new Integer[INSERTION_COUNT];
 		
 		for (int i=0; i<INSERTION_COUNT; i++)
@@ -172,7 +172,7 @@ public class Tests
 		final int INSERTION_COUNT = 100;
 		
 		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
-		RBTree greatT = new RBTree();
+		RBTree_danielf1_dormendil greatT = new RBTree_danielf1_dormendil();
 		
 		   
 		Integer[] insertionArr = new Integer[INSERTION_COUNT];
@@ -223,7 +223,7 @@ public class Tests
 		
 		final int INSERTION_COUNT = 50;
 		
-		RBTree greatT = new RBTree();   
+		RBTree_danielf1_dormendil greatT = new RBTree_danielf1_dormendil();   
 		int[] insertionArr = new int[INSERTION_COUNT];
 		
 		for (int i=0; i<INSERTION_COUNT; i++)
@@ -267,7 +267,7 @@ public class Tests
 		
 		final int INSERTION_COUNT = 50;
 		
-		RBTree greatT = new RBTree();
+		RBTree_danielf1_dormendil greatT = new RBTree_danielf1_dormendil();
 		
 		   
 		int[] insertionArr = new int[INSERTION_COUNT];
@@ -310,7 +310,7 @@ public class Tests
 	@Test
 	public void test_empty() throws IOException 
 	{
-		RBTree greatT = new RBTree();
+		RBTree_danielf1_dormendil greatT = new RBTree_danielf1_dormendil();
 		
 		if (!greatT.empty())
 		{
@@ -346,7 +346,7 @@ public class Tests
 	{
 		java.util.Random gen = new java.util.Random();
 		
-		RBTree greatT = new RBTree();
+		RBTree_danielf1_dormendil greatT = new RBTree_danielf1_dormendil();
 		
 		final int INSERTION_COUNT = gen.nextInt(300) + 1; // +1 to avoid zero	
 		
@@ -406,7 +406,7 @@ public class Tests
 		
 		final int INSERTION_COUNT = 50;
 		
-		RBTree greatT = new RBTree();
+		RBTree_danielf1_dormendil greatT = new RBTree_danielf1_dormendil();
 		
 		int keyNotInTree = gen.nextInt(5000);
 		String result = greatT.search(keyNotInTree);
@@ -468,7 +468,7 @@ public class Tests
 		final int INSERTION_COUNT = 50;
 		
 		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
-		RBTree greatT = new RBTree();
+		RBTree_danielf1_dormendil greatT = new RBTree_danielf1_dormendil();
 		
 		RBNode result = greatT.getRoot();
 		if (null != result)
@@ -508,7 +508,7 @@ public class Tests
 	public void test_INSERT_Down_Order()
 	{
 		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
-		RBTree greatT = new RBTree();
+		RBTree_danielf1_dormendil greatT = new RBTree_danielf1_dormendil();
 		
 		TestUtils.insertToBothTrees(t, greatT, 5);
 		
@@ -555,7 +555,7 @@ public class Tests
 		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
 
 		// create your tree
-		RBTree greatT = new RBTree();
+		RBTree_danielf1_dormendil greatT = new RBTree_danielf1_dormendil();
 		
 		// this badList will be inserted one by one to the tree - in the for loop
 		int [] badList = new int[] {99660, 32514, 85126};
@@ -600,7 +600,7 @@ public class Tests
 		final int INSERTION_COUNT = 5000;
 		
 		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
-		RBTree greatT = new RBTree();
+		RBTree_danielf1_dormendil greatT = new RBTree_danielf1_dormendil();
 			
        
 		int[] insertionList = new int[INSERTION_COUNT];
@@ -638,7 +638,7 @@ public class Tests
 	public void test_DELETE_Simple() throws IOException
 	{
 		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
-		RBTree greatT = new RBTree();
+		RBTree_danielf1_dormendil greatT = new RBTree_danielf1_dormendil();
 		TestUtils.enumErrors res;
 
 			
@@ -692,7 +692,7 @@ public class Tests
 		final int INSERTION_COUNT = 5000;
 		
 		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
-		RBTree greatT = new RBTree();
+		RBTree_danielf1_dormendil greatT = new RBTree_danielf1_dormendil();
 		
 		   
 		Integer[] insertionArr = new Integer[INSERTION_COUNT];
@@ -752,6 +752,71 @@ public class Tests
 
 	//////////////////////////End of Deletion Tests //////////////////////////////////
 	
+	
+	@Test
+	public void test_TABLE() throws IOException 
+	{
+		java.util.Random gen = new java.util.Random();
+		
+		Logger logFile = Tests.getUniqeLogger("test_DELETE_fuzzer", true);
+		
+		float[] deleteColor = new float[10];
+		float[] insertColor = new float[10];
+		
+		for (int j=1; j<=10; j++)
+		{
+			
+			final int INSERTION_COUNT = 10000 * j;
+			
+			RedBTree<Integer,String> t = new RedBTree<Integer,String>();
+			RBTree_danielf1_dormendil greatT = new RBTree_danielf1_dormendil();
+			
+			   
+			Integer[] insertionArr = new Integer[INSERTION_COUNT];
+			
+			for (int i=0; i<INSERTION_COUNT; i++)
+			{
+				int nextKey = gen.nextInt(Integer.MAX_VALUE);
+				insertionArr[i] = nextKey;
+				
+				int color = TestUtils.insertToBothTrees(t, greatT, nextKey);
+				insertColor[j-1] += color;
+				if (-1 == color)
+				{
+					i--;
+					continue;
+				}
+				
+			}
+			insertColor[j-1] /= INSERTION_COUNT;
+			//log insertion list
+			//logFile.write(Arrays.toString(Arrays.copyOf(insertionArr, INSERTION_COUNT)));
+			
+			//if (TestUtils.CheckTrees(t, greatT) != TestUtils.enumErrors.OK)
+			//{
+			//	fail("Non match tree: insertion keys %n " + insertionArr.toString());
+			//}
+			
+			Arrays.sort(insertionArr);
+			
+	
+			for (int i=0; i<INSERTION_COUNT; i++)
+			{
+				int deleteKey = insertionArr[i];
+				int color = greatT.delete(deleteKey);
+				deleteColor[j-1] += color;
+		
+			}	
+			
+			deleteColor[j-1] /= INSERTION_COUNT;
+			
+			String print = "%d - Delete Color:  %f ; Insert Color:  %f";
+			System.out.println(String.format(print, j-1, deleteColor[j-1], insertColor[j-1])) ;
+		}
+		
+		logFile.close();
+		
+	}
 	
 	
 	
