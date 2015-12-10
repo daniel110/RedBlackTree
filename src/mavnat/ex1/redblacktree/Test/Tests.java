@@ -122,7 +122,7 @@ public class Tests
 	//					Each time we insert 100 keys to the tree, and then check the min function  ***//
 	@Test
 	@Repeat(times=500)
-	public void test_min_Check() throws IOException 
+	public void test_min_Insert_Check() throws IOException 
 	{
 		java.util.Random gen = new java.util.Random();
 		
@@ -160,12 +160,81 @@ public class Tests
 		}
 	}
 	
+	@Test
+	@Repeat(times=500)
+	public void test_min_Delete_Check() throws IOException 
+	{
+		java.util.Random gen = new java.util.Random();
+		
+		final int INSERTION_COUNT = 100;
+		
+		RBTree_danielf1_dormendil greatT = new RBTree_danielf1_dormendil();	   
+		Integer[] insertionArr = new Integer[INSERTION_COUNT];
+		
+		for (int i=0; i<INSERTION_COUNT; i++)
+		{
+			int nextKey = gen.nextInt(999999999);
+			insertionArr[i] = nextKey;
+			
+			if (-1 == greatT.insert(nextKey, Integer.toString(nextKey)))
+			{
+				i--;
+				continue;
+			}				
+		}
+		
+		Integer[] logInsertionArr = Arrays.copyOf(insertionArr, INSERTION_COUNT);
+		
+		Arrays.sort(insertionArr);
+		
+		String expected = Integer.toString(insertionArr[0]);
+		String result = greatT.min();
+		if (!expected.equals(result))
+		{
+			Logger logFile = Tests.getUniqeLogger("test_min_Delete_Check");
+			
+			logFile.write(Arrays.toString(Arrays.copyOf(logInsertionArr,INSERTION_COUNT)));
+			String messageLog = "Insert was wrong - stoped, Expected: " + expected + ", Got: " + result;
+			logFile.write(messageLog);
+			logFile.close();
+			
+			fail(messageLog);
+		}
+		
+		List<Integer> insertionList = Arrays.asList(insertionArr);
+		Collections.shuffle(insertionList);
+		Integer[] deletionArr = insertionList.toArray(new Integer[insertionArr.length]);
+		
+		int stopIndex = INSERTION_COUNT/2;
+		for (int i=0; i<stopIndex; i++)
+		{
+			greatT.delete(deletionArr[i]);
+		}
+		
+		Integer [] deleteLeft = Arrays.copyOfRange(deletionArr, stopIndex, INSERTION_COUNT) ;
+		
+		Arrays.sort(deleteLeft);
+		expected = Integer.toString(deleteLeft[0]);
+		result = greatT.min();
+		if (!expected.equals(result))
+		{
+			Logger logFile = Tests.getUniqeLogger("test_min_Delete_Check");
+			
+			logFile.write(Arrays.toString(Arrays.copyOf(logInsertionArr,INSERTION_COUNT)));
+			String messageLog = "Delete Part - Expected: " + expected + ", Got: " + result;
+			logFile.write(messageLog);
+			logFile.close();
+			
+			fail(messageLog);
+		}
+	}
+	
 	
 	//*** Test RBTree.max(). runs 500 times:
 	//					Each time we insert 100 keys to the tree, and then check the max function  ***//
 	@Test
 	@Repeat(times=500)
-	public void test_max_Check() throws IOException 
+	public void test_max_Insert_Check() throws IOException 
 	{
 		java.util.Random gen = new java.util.Random();
 		
@@ -206,18 +275,104 @@ public class Tests
 			fail(messageLog);
 		}
 	}
+	
+
+	@Test
+	@Repeat(times=500)
+	public void test_max_Delete_Check() throws IOException 
+	{
+		java.util.Random gen = new java.util.Random();
+		
+		final int INSERTION_COUNT = 100;
+		
+		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
+		RBTree_danielf1_dormendil greatT = new RBTree_danielf1_dormendil();
+		
+		   
+		Integer[] insertionArr = new Integer[INSERTION_COUNT];
+		
+		for (int i=0; i<INSERTION_COUNT; i++)
+		{
+			int nextKey = gen.nextInt(999999999);
+			insertionArr[i] = nextKey;
+			
+			if (-1 == TestUtils.insertToBothTrees(t, greatT, nextKey))
+			{
+				i--;
+				continue;
+			}				
+		}
+		
+		Integer[] logInsertionArr = Arrays.copyOf(insertionArr, INSERTION_COUNT);
+		// sort the insertion keys
+		Arrays.sort(insertionArr);
+		
+		String expected = Integer.toString(insertionArr[INSERTION_COUNT-1]);
+		String result = greatT.max();
+		if (!expected.equals(result))
+		{
+			Logger logFile = Tests.getUniqeLogger("test_max_Check");
+			
+			logFile.write(Arrays.toString(Arrays.copyOf(logInsertionArr,INSERTION_COUNT)));
+			String messageLog = "Expexted: " + expected + ", Got: " + result;
+			logFile.write(messageLog);
+			logFile.close();
+			
+			fail(messageLog);
+		}
+		
+
+		
+		List<Integer> insertionList = Arrays.asList(insertionArr);
+		Collections.shuffle(insertionList);
+		Integer[] deletionArr = insertionList.toArray(new Integer[insertionArr.length]);
+		
+		int stopIndex = INSERTION_COUNT/2;
+		for (int i=0; i<stopIndex; i++)
+		{
+			greatT.delete(deletionArr[i]);
+		}
+		
+		Integer [] deleteLeft = Arrays.copyOfRange(deletionArr, stopIndex, INSERTION_COUNT) ;
+		
+		Arrays.sort(deleteLeft);
+		expected = Integer.toString(deleteLeft[deleteLeft.length-1]);
+		result = greatT.max();
+		if (!expected.equals(result))
+		{
+			Logger logFile = Tests.getUniqeLogger("test_min_Delete_Check");
+			
+			logFile.write(Arrays.toString(Arrays.copyOf(logInsertionArr,INSERTION_COUNT)));
+			String messageLog = "Delete Part - Expected: " + expected + ", Got: " + result;
+			logFile.write(messageLog);
+			logFile.close();
+			
+			fail(messageLog);
+		}
+	}
 	/////////////////////////// End of Min Max Tests ////////////////////////////
 	
 	
 	
 	////////////////////////// Array Tests //////////////////////////////////////
 	
+	// help function - for test_keysToArray_Delete test
+	public int[] toPrimitive(Integer[] IntegerArray) 
+	{
+
+		int[] result = new int[IntegerArray.length];
+		for (int i = 0; i < IntegerArray.length; i++) {
+			result[i] = IntegerArray[i].intValue();
+		}
+		return result;
+	}
+	
 	
 	//*** Test RBTree.keysToArray(). runs 100 times:
 	//					Each time we insert 50 keys to the tree, and then check keysToArray function ***//
 	@Test
 	@Repeat(times=100)
-	public void test_keysToArray() throws IOException 
+	public void test_keysToArray_Insert() throws IOException 
 	{
 		java.util.Random gen = new java.util.Random();
 		
@@ -254,8 +409,84 @@ public class Tests
 			
 			fail(messageLog);
 		}
+		
+		
 	}
 	
+	@Test
+	@Repeat(times=100)
+	public void test_keysToArray_Delete() throws IOException 
+	{
+		java.util.Random gen = new java.util.Random();
+		
+		final int INSERTION_COUNT = 50;
+		
+		RBTree_danielf1_dormendil greatT = new RBTree_danielf1_dormendil();   
+		Integer[] insertionArr = new Integer[INSERTION_COUNT];
+		
+		for (int i=0; i<INSERTION_COUNT; i++)
+		{
+			int nextKey = gen.nextInt(999999999);
+			insertionArr[i] = nextKey;
+			
+			if (-1 == greatT.insert(nextKey, Integer.toString(nextKey)))
+			{
+				i--;
+				continue;
+			}				
+		}
+		
+		Integer[] logInsertionArr = Arrays.copyOf(insertionArr, INSERTION_COUNT);
+		// sort the insertion keys
+		Arrays.sort(insertionArr);
+		
+		int[] expected = this.toPrimitive(insertionArr);
+		int[] result = greatT.keysToArray();
+		if (!Arrays.equals(result, expected))
+		{
+			Logger logFile = Tests.getUniqeLogger("test_keysToArray");
+			
+			logFile.write(Arrays.toString(Arrays.copyOf(logInsertionArr,INSERTION_COUNT)));
+			String messageLog = "Expexted: " + expected + ", Got: " + result;
+			logFile.write(messageLog);
+			logFile.close();
+			
+			fail(messageLog);
+		}
+		
+		
+		
+		List<Integer> insertionList = Arrays.asList(insertionArr);
+		Collections.shuffle(insertionList);
+		Integer[] deletionArr = insertionList.toArray(new Integer[insertionArr.length]);
+		
+		int stopIndex = INSERTION_COUNT/2;
+		for (int i=0; i<stopIndex; i++)
+		{
+			greatT.delete(deletionArr[i]);
+		}
+		
+		Integer[] deleteLeft = Arrays.copyOfRange(deletionArr, stopIndex, INSERTION_COUNT) ;
+		
+		int[] expected2 = this.toPrimitive(deleteLeft);
+		Arrays.sort(expected2);
+		
+		int[] result2 = greatT.keysToArray();
+		if (!Arrays.equals(result2, expected2))
+		{
+			Logger logFile = Tests.getUniqeLogger("test_min_Delete_Check");
+			
+			logFile.write(Arrays.toString(Arrays.copyOf(logInsertionArr,INSERTION_COUNT)));
+			String messageLog = "Delete Part - Expected: " + expected + ", Got: " + result;
+			logFile.write(messageLog);
+			logFile.close();
+			
+			fail(messageLog);
+		}
+		
+	}
+	
+
 	
 	//*** Test RBTree.valusToArray(). runs 100 times:
 	//					Each time we insert 50 keys to the tree, and then check valusToArray function ***//
@@ -709,6 +940,8 @@ public class Tests
 			}
 			
 		}
+		
+		Integer[] logInsertionArr = Arrays.copyOf(insertionArr, INSERTION_COUNT);
 		//log insertion list
 		logFile.write(Arrays.toString(Arrays.copyOf(insertionArr, INSERTION_COUNT)));
 		
@@ -789,13 +1022,6 @@ public class Tests
 				
 			}
 			insertColor[j-1] /= INSERTION_COUNT;
-			//log insertion list
-			//logFile.write(Arrays.toString(Arrays.copyOf(insertionArr, INSERTION_COUNT)));
-			
-			//if (TestUtils.CheckTrees(t, greatT) != TestUtils.enumErrors.OK)
-			//{
-			//	fail("Non match tree: insertion keys %n " + insertionArr.toString());
-			//}
 			
 			Arrays.sort(insertionArr);
 			
@@ -819,6 +1045,53 @@ public class Tests
 	}
 	
 	
+	// for delete_fuzzer debugging - uncomment the next line ("//@Test") to run this test
+	//@Test
+	public void test_DELETE_BADLIST()
+	{
+		RedBTree<Integer,String> t = new RedBTree<Integer,String>();
+		RBTree_danielf1_dormendil greatT = new RBTree_danielf1_dormendil();
+		
+		   
+		int [] insertbadList = new int[] {99660, 32514, 85126};
+		
+		for (int i=0; i<insertbadList.length; i++)
+		{
+			int nextKey = insertbadList[i];
+			
+			if (-1 == TestUtils.insertToBothTrees(t, greatT, nextKey))
+			{
+				i--;
+				continue;
+			}
+			
+		}
+		
+		if (TestUtils.CheckTrees(t, greatT) != TestUtils.enumErrors.OK)
+		{
+			fail("Non match tree: cannot run delete test, see log file for the insertion list");
+		}
+		
+
+		int [] deletebadList = new int[] {99660, 32514, 85126};
+		
+		TestUtils aaa= new TestUtils();
+
+		for (int i=0; i<deletebadList.length; i++)
+		{
+			int deleteKey = deletebadList[i];
+			
+			greatT.delete(deleteKey);
+			
+			TestUtils.CheckHeigtResult res = aaa.CheckTreeBlackHeight(greatT.getRoot(), null);
+			if (res.state != TestUtils.enumErrors.OK)
+			{
+				fail("Blat!");
+			}
+			
+		}	
+		
+	}
 	
 	//////// !!!!!!  End of Tests section !!!!!! //////////
 	
