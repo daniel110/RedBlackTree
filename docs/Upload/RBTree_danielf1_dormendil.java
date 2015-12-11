@@ -631,21 +631,6 @@ public class RBTree_danielf1_dormendil
 			return this.currentOperationSwitchColorCounter;
 		}
 		
-		//	TODO: Check if this logic is necessary. it looks like not.
-		//	Check case 0.1
-//		if (brother.isLeaf())
-//		{
-//			//	Brother must be black so we check parent
-//			this.setColorAndUpdateCounter(brother, true);
-//			if (parent.isRed)
-//			{
-//				this.setColorAndUpdateCounter(parent, false);
-//				return this.currentOperationSwitchColorCoutner;
-//			}
-//			return this.deleteBalancer(parent);
-//		}
-		
-		
 		//	Check case 1
 		if (parent.isRed == false && brother.isRed == true)
 		{
