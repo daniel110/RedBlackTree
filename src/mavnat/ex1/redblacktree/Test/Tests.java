@@ -942,9 +942,7 @@ public class Tests
 		}
 		
 		Integer[] logInsertionArr = Arrays.copyOf(insertionArr, INSERTION_COUNT);
-		//log insertion list
-		logFile.write(Arrays.toString(Arrays.copyOf(insertionArr, INSERTION_COUNT)));
-		
+
 		if (TestUtils.CheckTrees(t, greatT) != TestUtils.enumErrors.OK)
 		{
 			fail("Non match tree: insertion keys %n " + insertionArr.toString());
@@ -968,6 +966,9 @@ public class Tests
 			TestUtils.CheckHeigtResult res = aaa.CheckTreeBlackHeight(greatT.getRoot(), null);
 			if (res.state != TestUtils.enumErrors.OK)
 			{
+				//log insertion list
+				logFile.write(Arrays.toString(Arrays.copyOf(logInsertionArr, INSERTION_COUNT)));
+				
 				System.out.println("After state:");
 				TestUtils.printTree(greatT);
 				logFile.write(Arrays.toString(Arrays.copyOf(deletionArr, i+1)));

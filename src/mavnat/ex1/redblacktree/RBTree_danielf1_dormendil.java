@@ -20,7 +20,7 @@ public class RBTree_danielf1_dormendil
 	
 	private int nodesCount;
 	
-	private int currentOperationSwitchColorCoutner;
+	private int currentOperationSwitchColorCounter;
 	
 	/**
 	 * public class RBNode
@@ -423,7 +423,7 @@ public class RBTree_danielf1_dormendil
 			this.nodesCount += 1;
 			this.updateMinMaxAfterInsertion(newNode);
 			
-			return this.currentOperationSwitchColorCoutner;
+			return this.currentOperationSwitchColorCounter;
 		}
 		// if the key already exist the searchResult.Result will the relevant RBNode, else null
 		else if (null != searchResult.Result)
@@ -464,7 +464,7 @@ public class RBTree_danielf1_dormendil
 			// if we are here the root must be red
 			this.setColorAndUpdateCounter(node, false);
 			
-			return this.currentOperationSwitchColorCoutner;
+			return this.currentOperationSwitchColorCounter;
 		}
 		
 		
@@ -490,7 +490,7 @@ public class RBTree_danielf1_dormendil
 			}
 		}
 		
-		return this.currentOperationSwitchColorCoutner;
+		return this.currentOperationSwitchColorCounter;
 	}
 	
 	/**
@@ -603,7 +603,7 @@ public class RBTree_danielf1_dormendil
 			this.replaceNode(doubleBlack, null);
 		}	
 		
-		return this.currentOperationSwitchColorCoutner;		
+		return this.currentOperationSwitchColorCounter;		
 	}
 	
 	
@@ -624,13 +624,13 @@ public class RBTree_danielf1_dormendil
 		//	Brother must exist because doubleBlack is black
 		if (doubleBlack == null || brother == null)
 		{
-			return this.currentOperationSwitchColorCoutner;
+			return this.currentOperationSwitchColorCounter;
 		}
 		
 		//	root cancels double-black
 		if (this.rootNode == doubleBlack)
 		{
-			return this.currentOperationSwitchColorCoutner;
+			return this.currentOperationSwitchColorCounter;
 		}
 		
 		//	TODO: Check if this logic is necessary. it looks like not.
@@ -668,7 +668,7 @@ public class RBTree_danielf1_dormendil
 				if (parent.isRed == true)
 				{
 					this.setColorAndUpdateCounter(parent, false);
-					return this.currentOperationSwitchColorCoutner;
+					return this.currentOperationSwitchColorCounter;
 				}
 				
 				return this.deleteBalancer(parent);
@@ -708,7 +708,7 @@ public class RBTree_danielf1_dormendil
 			}
 		}
 		
-		return this.currentOperationSwitchColorCoutner;
+		return this.currentOperationSwitchColorCounter;
 	}
 	
 	/**
@@ -1051,7 +1051,7 @@ public class RBTree_danielf1_dormendil
 		{
 			if(isRed != node.isRed())
 			{
-				this.currentOperationSwitchColorCoutner +=1;
+				this.currentOperationSwitchColorCounter +=1;
 			}
 			node.setColor(isRed);
 		}
@@ -1059,7 +1059,7 @@ public class RBTree_danielf1_dormendil
 	
 	private void resetColorSwitchCounter()
 	{
-		this.currentOperationSwitchColorCoutner = 0;
+		this.currentOperationSwitchColorCounter = 0;
 	}
 	/////////////////////////////////////
 	
